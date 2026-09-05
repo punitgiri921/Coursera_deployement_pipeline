@@ -1,0 +1,93 @@
+table Sales
+	lineageTag: a3d8d83a-1ecf-46aa-aa18-221974ee7397
+
+	measure 'Total Sales' = SUM(Sales[SalesAmount])
+		formatString: 0
+		lineageTag: 979746cd-fa7c-4a46-a947-da40460d197e
+
+	measure 'Total Quantity' = SUM(Sales[Quantity])
+		formatString: 0
+		lineageTag: d876f417-0ec2-4af2-b2b0-10dd5f76b4f9
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 2a056792-927c-4a47-a117-396470c3c78f
+		summarizeBy: none
+		sourceColumn: Date
+
+		variation Variation
+			isDefault
+			relationship: 6043c273-4d0e-47ba-9507-baf75492d166
+			defaultHierarchy: LocalDateTable_f0b7461a-b70e-43e0-aea9-e20012b51c15.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Product
+		dataType: string
+		lineageTag: a965c771-79e9-426c-9423-332ba912b243
+		summarizeBy: none
+		sourceColumn: Product
+
+		annotation SummarizationSetBy = Automatic
+
+	column Category
+		dataType: string
+		lineageTag: 622b151c-9a96-49d9-b5d8-df70f40a33d8
+		summarizeBy: none
+		sourceColumn: Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column Region
+		dataType: string
+		lineageTag: f6e5801f-09a0-4058-877d-f78c54d8fb96
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantity
+		dataType: int64
+		formatString: 0
+		lineageTag: 68f322e9-72bc-4c03-bed1-a97d132ee357
+		summarizeBy: sum
+		sourceColumn: Quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column SalesAmount
+		dataType: int64
+		formatString: 0
+		lineageTag: eb367b79-97fc-4b65-85c0-95da8f6b2d92
+		summarizeBy: sum
+		sourceColumn: SalesAmount
+
+		annotation SummarizationSetBy = Automatic
+
+	column SalesAmountQty = Sales[SalesAmount]/Sales[Quantity]
+		lineageTag: e7690f9f-f3b1-47f1-bc66-ce4feb535b3a
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Sales = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents(p_FilePath), null, true),
+				    Sales_Sheet = Source{[Item="Sales",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(Sales_Sheet, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Date", type date}, {"Product", type text}, {"Category", type text}, {"Region", type text}, {"Quantity", Int64.Type}, {"SalesAmount", Int64.Type}, {"Column7", type any}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column7"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

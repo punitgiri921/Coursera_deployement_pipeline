@@ -1,0 +1,7 @@
+expression p_FilePath = "D:\01_Ex_Files_Intermediate_SQL_for_Data_Scientists\Goodly PowerBi\Coursera_deployement_pipeline\_4b6dfb771b5c49869642ad19c408cd7e_Dataset.xlsx" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 01fc8da7-6000-4475-8549-c55b78c610f7
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
