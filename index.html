@@ -3,2014 +3,1307 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Power BI & Fabric Deployment Architecture Tracker</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <title>Brightline Analytics — Power BI / Fabric Deployment Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg-primary: #0b0f19;
       --bg-secondary: #111827;
       --bg-card: #1e293b;
       --bg-card-hover: #26354a;
-      --border-color: rgba(255, 255, 255, 0.08);
-      --border-focus: #3b82f6;
+      --border-color: #334155;
       --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
       --text-muted: #64748b;
       --accent-blue: #38bdf8;
       --accent-indigo: #6366f1;
-      --accent-purple: #a855f7;
-      --accent-emerald: #10b981;
+      --accent-green: #22c55e;
       --accent-amber: #f59e0b;
       --accent-rose: #f43f5e;
-      --gradient-accent: linear-gradient(135deg, #38bdf8 0%, #6366f1 50%, #a855f7 100%);
-      --glass-bg: rgba(30, 41, 59, 0.7);
-      --glass-border: rgba(255, 255, 255, 0.12);
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-      --shadow-lg: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-      --radius-lg: 16px;
-      --radius-md: 10px;
-      --radius-sm: 6px;
+      --accent-cyan: #06b6d4;
+      --glow-blue: rgba(56, 189, 248, 0.15);
+      --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
     }
 
     [data-theme="light"] {
       --bg-primary: #f8fafc;
-      --bg-secondary: #ffffff;
+      --bg-secondary: #f1f5f9;
       --bg-card: #ffffff;
-      --bg-card-hover: #f1f5f9;
-      --border-color: rgba(0, 0, 0, 0.1);
-      --border-focus: #2563eb;
+      --bg-card-hover: #f8fafc;
+      --border-color: #e2e8f0;
       --text-primary: #0f172a;
       --text-secondary: #475569;
-      --text-muted: #64748b;
-      --accent-blue: #0284c7;
-      --accent-indigo: #4f46e5;
-      --accent-purple: #9333ea;
-      --accent-emerald: #059669;
-      --accent-amber: #d97706;
-      --accent-rose: #e11d48;
-      --glass-bg: rgba(255, 255, 255, 0.9);
-      --glass-border: rgba(0, 0, 0, 0.08);
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-      --shadow-lg: 0 10px 30px -10px rgba(0, 0, 0, 0.12);
+      --text-muted: #94a3b8;
+      --glow-blue: rgba(99, 102, 241, 0.08);
     }
 
-    [data-theme="light"] .card {
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(0, 0, 0, 0.04);
-    }
-
-    [data-theme="light"] pre,
-    [data-theme="light"] .flow-pipeline-diagram {
-      background: #f1f5f9 !important;
-      color: #0f172a !important;
-      border: 1px solid rgba(0, 0, 0, 0.1) !important;
-    }
-
-    [data-theme="light"] .status-pill {
-      background: #f1f5f9;
-      border-color: rgba(0, 0, 0, 0.1);
-      color: #0f172a;
-    }
-
-    [data-theme="light"] .banner-current {
-      background: linear-gradient(135deg, rgba(2, 132, 199, 0.1), rgba(79, 70, 229, 0.1));
-      border-color: rgba(79, 70, 229, 0.25);
-    }
-
-    [data-theme="light"] th {
-      background: #f1f5f9;
-      color: #0f172a;
-    }
-
-    [data-theme="light"] td {
-      border-color: rgba(0, 0, 0, 0.08);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: var(--font-sans);
       background-color: var(--bg-primary);
       color: var(--text-primary);
+      line-height: 1.6;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      line-height: 1.5;
-    }
-
-    .sticky-header-wrapper {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background: var(--bg-secondary);
-      border-bottom: 1px solid var(--border-color);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     }
 
     header {
-      background: var(--bg-secondary);
-      padding: 1rem 2rem 0.75rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      background-color: rgba(11, 15, 25, 0.85);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
     }
-
+    [data-theme="light"] header {
+      background-color: rgba(255, 255, 255, 0.85);
+    }
     .header-content {
-      max-width: 1440px;
+      max-width: 1400px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
+    }
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .header-badges {
+      display: flex;
+      align-items: center;
       gap: 1rem;
     }
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-primary { background: var(--glow-blue); color: var(--accent-blue); border: 1px solid var(--accent-blue); }
+    .badge-amber { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border: 1px solid var(--accent-amber); }
+    .badge-green { background: rgba(34, 197, 94, 0.15); color: var(--accent-green); border: 1px solid var(--accent-green); }
 
     .theme-toggle-btn {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
-      padding: 0.4rem 0.85rem;
-      border-radius: 9999px;
-      font-size: 0.8rem;
-      font-weight: 600;
       color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
       cursor: pointer;
-      transition: all 0.2s ease;
       font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
     }
-
     .theme-toggle-btn:hover {
       background: var(--bg-card-hover);
-      border-color: var(--border-focus);
-      transform: translateY(-1px);
+      border-color: var(--accent-blue);
     }
 
-    .logo-group {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .logo-badge {
-      width: 44px;
-      height: 44px;
-      background: var(--gradient-accent);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 1.25rem;
-      color: #fff;
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
-    }
-
-    .title-area h1 {
-      font-size: 1.35rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      background: var(--gradient-accent);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .title-area p {
-      font-size: 0.82rem;
-      color: var(--text-secondary);
-    }
-
-    .header-status-pills {
-      display: flex;
-      gap: 0.75rem;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .status-pill {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      padding: 0.4rem 0.85rem;
-      border-radius: 9999px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .status-indicator {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: var(--accent-emerald);
-      box-shadow: 0 0 10px var(--accent-emerald);
-    }
-
-    .nav-tabs {
-      background: var(--bg-secondary);
-      border-bottom: 1px solid var(--border-color);
+    .tabs-nav {
+      max-width: 1400px;
+      margin: 1.5rem auto 0;
       padding: 0 2rem;
       display: flex;
-      gap: 0.5rem;
+      gap: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
       overflow-x: auto;
-      scrollbar-width: thin;
     }
-
-    .nav-tab {
-      padding: 0.85rem 1.25rem;
+    .tab-btn {
+      background: none;
+      border: none;
       color: var(--text-secondary);
-      font-size: 0.88rem;
+      padding: 0.75rem 1.25rem;
+      font-size: 0.95rem;
       font-weight: 600;
-      border-bottom: 2px solid transparent;
       cursor: pointer;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-      background: transparent;
-      border-top: none;
-      border-left: none;
-      border-right: none;
+      font-family: inherit;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
     }
-
-    .nav-tab:hover {
-      color: var(--text-primary);
-    }
-
-    .nav-tab.active {
+    .tab-btn.active {
       color: var(--accent-blue);
       border-bottom-color: var(--accent-blue);
     }
+    .tab-btn:hover:not(.active) {
+      color: var(--text-primary);
+    }
 
     main {
-      flex: 1;
-      max-width: 1440px;
-      width: 100%;
+      max-width: 1400px;
       margin: 0 auto;
       padding: 2rem;
+      flex: 1;
+      width: 100%;
     }
 
-    .tab-content {
-      display: none;
-    }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
 
-    .tab-content.active {
-      display: block;
-      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .dashboard-grid {
+    .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 1.25rem;
       margin-bottom: 2rem;
     }
-
-    .card {
+    .stat-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
+      border-radius: 1rem;
       padding: 1.5rem;
-      box-shadow: var(--shadow-sm);
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
-
-    .card:hover {
-      border-color: rgba(255, 255, 255, 0.18);
-    }
-
-    .card-title {
-      font-size: 0.82rem;
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: var(--text-muted);
-      font-weight: 700;
-      margin-bottom: 0.5rem;
     }
-
-    .metric-value {
-      font-size: 2.1rem;
+    .stat-value {
+      font-size: 2rem;
       font-weight: 800;
+      margin: 0.5rem 0 0.25rem;
       color: var(--text-primary);
-      letter-spacing: -0.02em;
     }
-
-    .metric-sub {
-      font-size: 0.82rem;
-      color: var(--text-secondary);
-      margin-top: 0.25rem;
-    }
+    .stat-subtitle { font-size: 0.8rem; color: var(--text-muted); }
 
     .progress-bar-container {
-      width: 100%;
       height: 8px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 999px;
-      overflow: hidden;
+      background: var(--bg-secondary);
+      border-radius: 9999px;
       margin-top: 0.75rem;
+      overflow: hidden;
     }
-
-    .progress-bar-fill {
+    .progress-fill {
       height: 100%;
-      background: var(--gradient-accent);
-      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-indigo));
+      border-radius: 9999px;
       transition: width 0.5s ease;
     }
 
     .section-title {
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       font-weight: 700;
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.5rem;
     }
 
-    .section-title span {
-      font-size: 0.8rem;
-      font-weight: 600;
-      padding: 0.2rem 0.6rem;
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--accent-blue);
-      border-radius: 9999px;
-    }
-
-    .banner-current {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(99, 102, 241, 0.12));
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      overflow: hidden;
       margin-bottom: 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1.25rem;
     }
-
-    .banner-text h2 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 0.25rem;
-    }
-
-    .banner-text p {
-      color: var(--text-secondary);
+    .custom-table th, .custom-table td {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
       font-size: 0.9rem;
     }
-
-    .roadmap-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+    .custom-table th {
+      background: var(--bg-secondary);
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
     }
+    .custom-table tr:last-child td { border-bottom: none; }
+    .custom-table tr:hover td { background: var(--bg-card-hover); }
 
     .phase-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 1.25rem;
-      transition: all 0.2s ease;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      transition: all 0.2s;
     }
-
-    .phase-card.in-progress {
+    .phase-card.active-phase {
       border-color: var(--accent-blue);
-      box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+      box-shadow: 0 0 20px var(--glow-blue);
     }
-
-    .phase-card.completed {
-      border-color: var(--accent-emerald);
-      opacity: 0.9;
-    }
-
-    .phase-card.locked {
-      opacity: 0.55;
-      background: rgba(17, 24, 39, 0.5);
-    }
-
     .phase-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.75rem;
-      flex-wrap: wrap;
-      gap: 0.5rem;
+      margin-bottom: 1rem;
     }
-
-    .phase-title-group {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .phase-badge {
-      font-size: 0.75rem;
+    .phase-title {
+      font-size: 1.15rem;
       font-weight: 700;
+    }
+    .status-tag {
+      font-size: 0.8rem;
       padding: 0.25rem 0.6rem;
-      border-radius: var(--radius-sm);
-      text-transform: uppercase;
+      border-radius: 0.35rem;
+      font-weight: 600;
     }
+    .status-completed { background: rgba(34, 197, 94, 0.15); color: var(--accent-green); }
+    .status-in-progress { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); }
+    .status-locked { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); }
 
-    .badge-progress {
-      background: rgba(56, 189, 248, 0.2);
-      color: var(--accent-blue);
-    }
-
-    .badge-locked {
-      background: rgba(100, 116, 139, 0.2);
-      color: var(--text-muted);
-    }
-
-    .badge-completed {
-      background: rgba(16, 185, 129, 0.2);
-      color: var(--accent-emerald);
-    }
-
-    .task-checklist {
-      list-style: none;
-      margin-top: 0.75rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
+    .task-list { list-style: none; }
     .task-item {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 0.75rem;
-      font-size: 0.88rem;
-      color: var(--text-secondary);
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+      font-size: 0.9rem;
+    }
+    .task-item:last-child { border-bottom: none; }
+    .task-checkbox {
+      margin-top: 0.2rem;
+      accent-color: var(--accent-blue);
+      width: 1.1rem;
+      height: 1.1rem;
+      cursor: pointer;
     }
 
-    .task-checkbox {
-      width: 16px;
-      height: 16px;
-      border-radius: 4px;
+    .lens-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .lens-card {
+      background: var(--bg-secondary);
       border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+    }
+    .lens-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 0.65rem;
+      gap: 0.35rem;
     }
+    .lens-desc { font-size: 0.85rem; color: var(--text-secondary); }
 
-    .task-item.done .task-checkbox {
-      background: var(--accent-emerald);
-      border-color: var(--accent-emerald);
-      color: #fff;
-    }
-
-    .task-item.done {
-      color: var(--text-muted);
-      text-decoration: line-through;
-    }
-
-    .table-container {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      overflow-x: auto;
-      box-shadow: var(--shadow-sm);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 0.88rem;
-    }
-
-    th {
-      background: rgba(17, 24, 39, 0.6);
-      padding: 1rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    td {
-      padding: 1rem;
-      border-bottom: 1px solid var(--border-color);
-      color: var(--text-primary);
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    tr:hover td {
-      background: rgba(255, 255, 255, 0.02);
-    }
-
+    pre, code { font-family: var(--font-mono); }
     .code-pill {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 0.2rem 0.5rem;
-      border-radius: var(--radius-sm);
-      color: var(--accent-blue);
-      border: 1px solid rgba(56, 189, 248, 0.2);
-    }
-
-    .scenario-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .scenario-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .scenario-card.s1 { border-top: 4px solid var(--accent-blue); }
-    .scenario-card.s2 { border-top: 4px solid var(--accent-purple); }
-    .scenario-card.s3 { border-top: 4px solid var(--accent-amber); }
-
-    .scenario-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
-
-    .scenario-req-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-    }
-
-    .scenario-req-list li::before {
-      content: "•";
-      color: var(--accent-blue);
-      margin-right: 0.5rem;
-      font-weight: bold;
-    }
-
-    .flow-pipeline-diagram {
-      background: rgba(17, 24, 39, 0.9);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 1.25rem;
-      margin: 1rem 0;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-      overflow-x: auto;
-      color: #93c5fd;
-      line-height: 1.6;
-    }
-
-    footer {
       background: var(--bg-secondary);
-      border-top: 1px solid var(--border-color);
-      padding: 1.5rem 2rem;
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      text-align: center;
-      margin-top: auto;
+      color: var(--accent-blue);
+      padding: 0.2rem 0.4rem;
+      border-radius: 0.25rem;
+      font-size: 0.85rem;
+      border: 1px solid var(--border-color);
     }
   </style>
 </head>
 <body>
 
-  <div class="sticky-header-wrapper">
-    <header>
-      <div class="header-content">
-        <div class="logo-group">
-          <div class="logo-badge">PB</div>
-          <div class="title-area">
-            <h1>Power BI Deployment Architecture Tracker</h1>
-            <p>Dev → Test → Production Enterprise Pipeline Mastery</p>
-          </div>
-        </div>
-        <div class="header-status-pills">
-          <button id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Light / Dark Mode">
-            <span id="themeIcon">🌙</span>
-            <span id="themeText">Dark Mode</span>
-          </button>
-          <div class="status-pill">
-            <div class="status-indicator"></div>
-            <span>Active Phase: <strong>GRADUATED — Certified Enterprise Architect</strong></span>
-          </div>
-          <div class="status-pill">
-            <span>Overall: <strong>100%</strong></span>
-          </div>
-          <div class="status-pill">
-            <span>Role: <strong>Coach & Mentor Mode</strong></span>
-          </div>
-        </div>
+  <header>
+    <div class="header-content">
+      <div class="brand-title">
+        <span>⚡</span> Brightline Analytics Deployment Tracker
       </div>
-    </header>
+      <div class="header-badges">
+        <span class="badge badge-primary" id="header-phase-badge">Phase 6: Deployment Pipelines & Stage Rules</span>
+        <span class="badge badge-green" id="header-plan-badge">Plan A: SPN + Real Users</span>
+        <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">🌓 Theme</button>
+      </div>
+    </div>
+  </header>
 
-    <nav class="nav-tabs">
-      <button class="nav-tab active" onclick="switchTab('overview')">Overview Dashboard</button>
-      <button class="nav-tab" onclick="switchTab('roadmap')">20-Phase Roadmap</button>
-      <button class="nav-tab" onclick="switchTab('scenarios')">Assignment Scenarios</button>
-      <button class="nav-tab" onclick="switchTab('architecture')">Deployment Architecture</button>
-      <button class="nav-tab" onclick="switchTab('knowledge')">Knowledge & Scores</button>
-      <button class="nav-tab" onclick="switchTab('evidence')">Evidence & Baseline</button>
-      <button class="nav-tab" onclick="switchTab('troubleshooting')">Troubleshooting KB</button>
-      <button class="nav-tab" onclick="switchTab('revision')">Revision Center</button>
-    </nav>
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="switchTab('overview')">📊 Overview & Architecture</button>
+    <button class="tab-btn" onclick="switchTab('phases')">🚀 Phases (P0 – P9)</button>
+    <button class="tab-btn" onclick="switchTab('knowledge')">📚 Knowledge & Scores</button>
+    <button class="tab-btn" onclick="switchTab('labs')">🧪 Sabotage Labs (L1 – L20)</button>
+    <button class="tab-btn" onclick="switchTab('lenses')">🧠 7 Lenses & Scoring</button>
   </div>
 
   <main>
-    <!-- OVERVIEW TAB -->
-    <section id="overview" class="tab-content active">
-      <div class="banner-current" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(56, 189, 248, 0.15)); border-color: rgba(16, 185, 129, 0.3);">
-        <div class="banner-text">
-          <h2>🏆 Curriculum Completed — 100% Certified Enterprise Architect</h2>
-          <p>All 20 phases, 84 learning tasks, and 3 enterprise scenarios successfully mastered, validated, and signed off with a 9.8 / 10 distinction!</p>
-        </div>
-        <div>
-          <span class="phase-badge badge-completed" style="font-size: 0.9rem; padding: 0.6rem 1.25rem; background: var(--accent-emerald); color: white;">Graduated ✓</span>
-        </div>
-      </div>
-
-      <div class="dashboard-grid">
-        <div class="card">
-          <div class="card-title">Overall Progress</div>
-          <div class="metric-value">100%</div>
-          <div class="metric-sub">84 of 84 learning tasks completed</div>
+    <!-- TAB 1: OVERVIEW -->
+    <div id="tab-overview" class="tab-pane active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Overall Completion</span>
+          <div class="stat-value" id="overall-pct">75%</div>
           <div class="progress-bar-container">
-            <div class="progress-bar-fill" style="width: 100%; background: var(--accent-emerald);"></div>
+            <div class="progress-fill" style="width: 75%;"></div>
           </div>
+          <span class="stat-subtitle" style="margin-top: 0.5rem;">Target: 10 Phases (90–100 Hours)</span>
         </div>
-
-        <div class="card">
-          <div class="card-title">Curriculum Status</div>
-          <div class="metric-value" style="font-size: 1.35rem; color: var(--accent-emerald);">Graduated ✓</div>
-          <div class="metric-sub">Certified Deployment Architect</div>
+        <div class="stat-card">
+          <span class="stat-label">Current Active Phase</span>
+          <div class="stat-value" style="font-size: 1.3rem; color: var(--accent-blue);">P6: Deployment Pipelines</div>
+          <span class="stat-subtitle">DEV → TEST → PROD, Stage Rules, Drift Engine</span>
         </div>
-
-        <div class="card">
-          <div class="card-title">Technical Mastery Score</div>
-          <div class="metric-value">9.8 <span style="font-size: 1rem; color: var(--text-muted);">/ 10</span></div>
-          <div class="metric-sub">Across 13 Knowledge Domains</div>
+        <div class="stat-card">
+          <span class="stat-label">Trial Clock Status</span>
+          <div class="stat-value" style="font-size: 1.25rem; color: var(--accent-green);">Fabric F64 Active</div>
+          <span class="stat-subtitle">Diamond 💎 FTL4 in Central India (47d left)</span>
         </div>
-
-        <div class="card">
-          <div class="card-title">Scenarios Tracked</div>
-          <div class="metric-value">3</div>
-          <div class="metric-sub">Multi-Team • Regulatory • Prototype</div>
+        <div class="stat-card">
+          <span class="stat-label">Phase Gate Discipline</span>
+          <div class="stat-value" style="color: var(--accent-green);">≥ 80 / 100</div>
+          <span class="stat-subtitle">P0: 82 | P1: 85 | P2: 90 | P3: 90 | P4: 92 | P5: 95</span>
         </div>
       </div>
 
-      <div class="section-title">
-        Enterprise Deployment Lifecycle Architecture
-        <span>Fabric / Power BI Service</span>
-      </div>
+      <h2 class="section-title">🏢 Brightline Distribution Enterprise Topology</h2>
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Setting / Artifact</th>
+            <th>DEV (Development)</th>
+            <th>TEST (UAT Validation)</th>
+            <th>PROD (Production)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Workspace Name</strong></td>
+            <td><code class="code-pill">BL-Sales-DEV</code></td>
+            <td><code class="code-pill">BL-Sales-TEST</code></td>
+            <td><code class="code-pill">BL-Sales-PROD</code></td>
+          </tr>
+          <tr>
+            <td><strong>Content Source</strong></td>
+            <td>Git (<code class="code-pill">main</code> branch via Fabric Git)</td>
+            <td>Deployment Pipeline (DEV → TEST)</td>
+            <td>Deployment Pipeline (TEST → PROD)</td>
+          </tr>
+          <tr>
+            <td><strong>PostgreSQL Database</strong></td>
+            <td><code class="code-pill">brightline_dev</code> (250k rows, 6 mo)</td>
+            <td><code class="code-pill">brightline_test</code> (2.5M rows, 36 mo)</td>
+            <td><code class="code-pill">brightline_prod</code> (2.5M rows, 36 mo)</td>
+          </tr>
+          <tr>
+            <td><strong>Deployment Rule</strong></td>
+            <td>Default Parameter</td>
+            <td>Swap DB → <code class="code-pill">brightline_test</code></td>
+            <td>Swap DB → <code class="code-pill">brightline_prod</code></td>
+          </tr>
+          <tr>
+            <td><strong>Gateway Connection</strong></td>
+            <td><code class="code-pill">BL-PG-DEV</code> (Online)</td>
+            <td><code class="code-pill">BL-PG-TEST</code></td>
+            <td><code class="code-pill">BL-PG-PROD</code></td>
+          </tr>
+          <tr>
+            <td><strong>Endorsement & Apps</strong></td>
+            <td>Promoted Semantic Model</td>
+            <td>Promoted (UAT Validation)</td>
+            <td>Certified Semantic Model + Multi-Audience App</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-      <div class="flow-pipeline-diagram">
-[ Power BI Desktop / PBIP ] ──(Git Commit/Push)──> [ GitHub Repository ]
-                                                          │ (PR / CI Validation)
-                                                          ▼
-[ DEV WORKSPACE ] ──────────(Deployment Pipeline)────────> [ TEST WORKSPACE ] ─────────(Approval Gate)────────> [ PROD WORKSPACE ]
-• Isolated Feature Builds                               • Central Integration Staging                         • Hardened Production
-• Mock/Dev Data Sources                                • Staging DB / Refresh Validation                     • Production Enterprise Data
-• Dev Parameters                                       • Rule: Swap to Staging Connection                    • Rule: Swap to Prod Connection
-      </div>
-    </section>
-
-    <!-- ROADMAP TAB -->
-    <section id="roadmap" class="tab-content">
-      <div class="section-title">
-        Comprehensive 20-Phase Learning Roadmap
-        <span>Phase Gates Enabled</span>
-      </div>
-
-      <div class="roadmap-list" id="roadmapContainer">
-        <!-- Rendered Phases -->
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 0</span>
-              <h3 style="font-size: 1rem;">Project Setup & Baseline</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
+    <!-- TAB 2: PHASES -->
+    <div id="tab-phases" class="tab-pane">
+      <div class="phase-card">
+        <div class="phase-header">
+          <div>
+            <span class="badge badge-green">COMPLETED</span>
+            <span class="phase-title" style="margin-left: 0.5rem;">Phase 0 — Foundations: Tenant Discovery, Environments, Data</span>
           </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Inspect existing files, establish baseline inventory, verify Git readiness, create asset backups, and initialize learning tracking system.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Inspect workspace assets and dependencies</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Initialize state JSON and interactive HTML tracker</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Create local asset backup before modifications</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Baseline verification & sign-off</li>
-          </ul>
+          <span class="status-tag status-completed">✔ Gate Score: 82 / 100</span>
         </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 1</span>
-              <h3 style="font-size: 1rem;">Understand Deployment Architecture</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Pipelines vs Workspaces vs Git vs CI/CD; artifact lifecycle; deployment rules vs parameters.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Study Dev/Test/Prod separation & Fabric pipeline lifecycle</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Compare Deployment Pipelines vs Git Integration vs CI/CD workflows</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Complete Phase 1 Technical Checkpoint & Adaptive Questions</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 2</span>
-              <h3 style="font-size: 1rem;">Power BI/Fabric Workspace Architecture</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Multi-tier workspace topology across Scenarios 1, 2, and 3; isolation, roles, and capacity mapping.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Design workspace hierarchy & naming conventions</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Define workspace isolation and access boundaries</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Architecture design review & defense</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 3</span>
-              <h3 style="font-size: 1rem;">Existing Report & Dataset Assessment</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Hands-on audit of PBIX/Excel: schema, storage mode, data sources, parameters, credentials, deployment risks.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Inspect report visuals, tables, and storage mode</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Map source connections and evaluate environment hardcoding risks</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Produce Dataset Assessment Report</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 4</span>
-              <h3 style="font-size: 1rem;">Environment Configuration</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Create Dev, Test, Prod workspaces in Service/Fabric trial with proper capacity and role allocation.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Create DEV, TEST, PROD workspaces in Service/Fabric</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Configure initial workspace access & capacity settings</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Record environment IDs and configuration evidence</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 5</span>
-              <h3 style="font-size: 1rem;">Deployment Pipeline Configuration</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Create Fabric Deployment Pipeline, connect workspaces, explore comparison tooling and change detection.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Create Fabric/Power BI Deployment Pipeline</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Assign workspaces to Dev, Test, and Prod stages</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Analyze stage comparison indicators and artifact differences</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 6</span>
-              <h3 style="font-size: 1rem;">Parameters, Rules & Environment Differences</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Implement Power Query parameters and dataset deployment rules to decouple environments.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Parameterize dataset data source paths in Power BI Desktop</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Configure deployment rules in Deployment Pipeline for Test/Prod</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Defend parameter vs deployment rule trade-offs</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 7</span>
-              <h3 style="font-size: 1rem;">Dev → Test Promotion</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Perform Dev to Test deployment, define pre-promotion gates, verify rule application, configure credentials, test scheduled refresh.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Establish Dev → Test pre-promotion checklist</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Execute Dev → Test promotion in Deployment Pipeline</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Validate Test data source binding, credentials, and refresh</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 8</span>
-              <h3 style="font-size: 1rem;">Test → Production Promotion</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Execute controlled Test to Production promotion with strict sign-off gates, zero-downtime considerations, and post-deployment validation.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Define production change authorization & sign-off criteria</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Execute Test → Prod promotion</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Verify production report access, model refresh, and performance</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 9</span>
-              <h3 style="font-size: 1rem;">Validation & Testing Framework</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Build comprehensive smoke testing and automated/semi-automated validation protocols for post-deployment verification.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Draft Deployment Smoke-Test Checklist</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Execute validation across schema, measures, row counts, and visuals</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Document validation failure thresholds</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 10</span>
-              <h3 style="font-size: 1rem;">Security, Permissions & Governance</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Implement Least Privilege access matrix across stages, evaluate Row-Level Security (RLS), workspace roles, and pipeline permissions.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Formulate Workspace Role RBAC Matrix (Admin, Member, Contributor, Viewer)</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Evaluate RLS propagation and credential governance across environments</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Pass Security & Governance technical defense</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 11</span>
-              <h3 style="font-size: 1rem;">Scenario 1 Implementation — Multi-Team Analytics</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Architect isolated Dev workspaces for Sales, Finance, and Operations feeding into a shared staging and production environment.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Map multi-team branch and workspace topology</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Design cross-domain dependency & collision prevention strategy</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Validate unified promotion flow</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 12</span>
-              <h3 style="font-size: 1rem;">Scenario 2 Compliance Design — High-Compliance Financials</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Engineer multi-level approval pipeline (Tech → Compliance → Exec), immutable audit trails, and strict freeze windows.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Design 3-tier approval gate and sign-off logging protocol</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Define audit trail artifact capturing schema hashes & execution logs</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Compliance audit readiness review</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 13</span>
-              <h3 style="font-size: 1rem;">Scenario 3 Rapid Prototype Design — Innovation to Production</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Architect rapid innovation sandbox workspace, technical debt checklist, and refactoring path into standard Dev/Test/Prod pipeline.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Design isolated innovation sandbox workspace policies</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Formulate Sandbox-to-Pipeline Graduation Checklist</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Conduct technical debt audit and refactoring defense</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 14</span>
-              <h3 style="font-size: 1rem;">Git & Source Control with GitHub</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Enable PBIP format, commit to GitHub, implement branch strategy (feature branches, PRs, code reviews), and resolve merge conflicts.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Convert/Save Power BI Desktop asset to PBIP format</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Configure local Git repository & branch policy (main, develop, feature/*)</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Simulate Pull Request review, measure diff inspection, and merge flow</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 15</span>
-              <h3 style="font-size: 1rem;">CI/CD Concepts with GitHub Actions</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Design GitHub Actions workflow for automated validation, DAX syntax checks, and automated Fabric deployment via REST APIs.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Design GitHub Actions CI workflow for TMDL / PBIP schema validation</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Map Power BI REST APIs / Fabric CLI for automated pipeline deployment</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Establish Automated Quality Gates</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 16</span>
-              <h3 style="font-size: 1rem;">Failure Injection & Troubleshooting</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Safely inject and diagnose 5 real-world production failure scenarios (wrong parameter, broken gateway, schema drift, credential expiry, visual failure).</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Diagnose deployment failure & root cause analysis (TB-01 / TB-02)</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Diagnose schema drift and missing measure errors (TB-03)</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Troubleshoot credential expiry and refresh timeout failures (TB-04)</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 17</span>
-              <h3 style="font-size: 1rem;">Rollback & Recovery Engineering</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Implement and test rollback mechanisms (backward deployment, Git revert commit, pipeline redeployment, backup restore).</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Define production rollback decision matrix (RTO / RPO)</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Execute pipeline fast-rollback simulation</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Validate post-rollback data integrity and user notification</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 18</span>
-              <h3 style="font-size: 1rem;">Final Deliverable Blueprint & Architecture Synthesis</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Assemble complete enterprise deployment architecture document, executive summary, configuration scripts, and evidence appendix.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Synthesize Scenario 1, 2, and 3 Architecture Specifications</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Compile Governance, RBAC, and Validation Protocols</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Draft Executive Presentation & Technical Defense Summary</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 19</span>
-              <h3 style="font-size: 1rem;">Comprehensive Technical Assessment & Certification</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Rigorous 3-section senior technical assessment covering architecture, security, pipelines, CI/CD, and troubleshooting.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Complete Section 1: Architecture & Workspace Design (Score: 10.0/10)</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Complete Section 2: Pipelines, Rules & Refresh Governance (Score: 9.2/10)</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Complete Section 3: Troubleshooting & Recovery Scenarios (Score: 9.8/10)</li>
-          </ul>
-        </div>
-
-        <div class="phase-card completed">
-          <div class="phase-header">
-            <div class="phase-title-group">
-              <span class="phase-badge badge-completed">Phase 20</span>
-              <h3 style="font-size: 1rem;">Architecture Review & Graduation</h3>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--accent-emerald);">Completed ✓</span>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Final peer-review defense, tracker sign-off, export final portfolio artifact, and course graduation.</p>
-          <ul class="task-checklist">
-            <li class="task-item done"><div class="task-checkbox">✓</div> Conduct Full Architectural Portfolio Walkthrough (Score: 10.0/10)</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Address final technical review challenge questions (Score: 10.0/10)</li>
-            <li class="task-item done"><div class="task-checkbox">✓</div> Sign-off and graduation confirmation (Score: 10.0/10)</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- SCENARIOS TAB -->
-    <section id="scenarios" class="tab-content">
-      <div class="section-title">
-        The 3 Core Assignment Scenarios
-        <span>Cross-Cutting Real-World Cases</span>
-      </div>
-
-      <div class="scenario-grid">
-        <div class="scenario-card s1">
-          <div class="scenario-title" style="color: var(--accent-blue);">Scenario 1: Multi-Team Analytics</div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Sales, Finance, and Operations teams work in parallel on shared and domain-specific semantic models.</p>
-          <div class="card-title" style="margin-top: 0.5rem;">Architecture Pillars:</div>
-          <ul class="scenario-req-list">
-            <li>Isolated Development Workspaces per domain</li>
-            <li>Unified Promotion Process into central staging</li>
-            <li>Cross-domain dependency validation</li>
-            <li>Automated quality gates before merge</li>
-            <li>Controlled Production release schedule</li>
-          </ul>
-        </div>
-
-        <div class="scenario-card s2">
-          <div class="scenario-title" style="color: var(--accent-purple);">Scenario 2: High-Compliance Financials</div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Finance produces regulatory reporting requiring strict segregation of duties and immutable auditability.</p>
-          <div class="card-title" style="margin-top: 0.5rem;">Architecture Pillars:</div>
-          <ul class="scenario-req-list">
-            <li>Mandatory smoke & reconciliation tests</li>
-            <li>Multi-level approval: Tech → Compliance → Exec</li>
-            <li>Recorded sign-off logs & schema hash verification</li>
-            <li>Zero unauthorized prod deployments</li>
-            <li>Pre-planned, tested rollback playbook</li>
-          </ul>
-        </div>
-
-        <div class="scenario-card s3">
-          <div class="scenario-title" style="color: var(--accent-amber);">Scenario 3: Rapid Prototype to Production</div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Innovation team creates disposable prototypes that need an agile graduation path to enterprise production.</p>
-          <div class="card-title" style="margin-top: 0.5rem;">Architecture Pillars:</div>
-          <ul class="scenario-req-list">
-            <li>Lightweight sandbox development</li>
-            <li>Automated sanity & performance checks</li>
-            <li>Stakeholder sign-off threshold</li>
-            <li>Production hardening (naming, measures, formatting)</li>
-            <li>Controlled graduation to production</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- ARCHITECTURE TAB -->
-    <section id="architecture" class="tab-content">
-      <div class="section-title">
-        Environment Configuration Matrix
-        <span>DEV vs TEST vs PROD</span>
-      </div>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Dimension</th>
-              <th>Development (DEV)</th>
-              <th>Testing / Staging (TEST)</th>
-              <th>Production (PROD)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Workspace Name</strong></td>
-              <td><span class="code-pill">[App] - DEV</span></td>
-              <td><span class="code-pill">[App] - TEST</span></td>
-              <td><span class="code-pill">[App] - PROD</span></td>
-            </tr>
-            <tr>
-              <td><strong>Target Audience</strong></td>
-              <td>Developers & Engineers</td>
-              <td>QA Testers, BAs, Stakeholders</td>
-              <td>End Business Users & Executives</td>
-            </tr>
-            <tr>
-              <td><strong>Data Source Connection</strong></td>
-              <td>Dev DB / Sample CSV / Local Mock</td>
-              <td>Staging / QA Database (Full Volume)</td>
-              <td>Live Production Data Source</td>
-            </tr>
-            <tr>
-              <td><strong>Deployment Rule Method</strong></td>
-              <td>Base Parameter Values</td>
-              <td>Deployment Rule: Staging Source</td>
-              <td>Deployment Rule: Production Source</td>
-            </tr>
-            <tr>
-              <td><strong>Refresh Schedule</strong></td>
-              <td>On-Demand / Manual</td>
-              <td>Daily / Staging Refresh Cycle</td>
-              <td>Production SLA Scheduled Refresh</td>
-            </tr>
-            <tr>
-              <td><strong>Access Control Policy</strong></td>
-              <td>Contributors / Admins</td>
-              <td>Members / Testers (Restricted Edit)</td>
-              <td>Viewers / App Audiences Only (Read-Only)</td>
-            </tr>
-            <tr>
-              <td><strong>Change Authorization</strong></td>
-              <td>Peer Review / Feature Branch PR</td>
-              <td>Tech Lead Sign-off</td>
-              <td>CAB / Compliance / Exec Approval</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- KNOWLEDGE & SCORES TAB -->
-    <section id="knowledge" class="tab-content">
-      <div class="section-title">
-        Technical Knowledge & Domain Competency Radar
-        <span>Evaluation Standard: Senior Architect</span>
-      </div>
-
-      <div class="table-container" style="margin-bottom: 2rem;">
-        <table>
-          <thead>
-            <tr>
-              <th>Domain</th>
-              <th>Target Competency</th>
-              <th>Current Score</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>Deployment Pipelines</td><td>Stages, comparison tooling, artifact lifecycle</td><td><strong>9.8</strong> / 10</td><td><span class="phase-badge badge-completed">Verified ✓</span></td></tr>
-            <tr><td>Workspace Architecture</td><td>RBAC, capacity allocation, isolation tiers</td><td><strong>9.6</strong> / 10</td><td><span class="phase-badge badge-completed">Verified ✓</span></td></tr>
-            <tr><td>Parameters</td><td>Power Query parameters, M queries, binding</td><td><strong>9.8</strong> / 10</td><td><span class="phase-badge badge-completed">Verified ✓</span></td></tr>
-            <tr><td>Deployment Rules</td><td>Pipeline rules vs parameters, connection swapping</td><td><strong>9.8</strong> / 10</td><td><span class="phase-badge badge-completed">Verified ✓</span></td></tr>
-            <tr><td>Refresh & Gateways</td><td>Scheduled refresh, On-Prem / VNet Gateway</td><td><strong>9.2</strong> / 10</td><td><span class="phase-badge badge-completed">Verified ✓</span></td></tr>
-            <tr><td>Credentials & OAuth</td><td>OAuth2, Service Principals, OAuth token refresh</td><td>-- / 10</td><td><span class="phase-badge badge-locked">Pending</span></td></tr>
-            <tr><td>Security & RLS</td><td>Least privilege, dynamic RLS, role mappings</td><td><strong>9.3</strong> / 10</td><td><span class="phase-badge badge-completed">Verified ✓</span></td></tr>
-            <tr><td>Git & Source Control</td><td>PBIP, branch strategy, PR reviews, merge conflicts</td><td><strong>9.0</strong> / 10</td><td><span class="phase-badge badge-completed">Verified ✓</span></td></tr>
-            <tr><td>CI/CD Concepts</td><td>GitHub Actions, validation scripts, build gates</td><td><strong>8.5</strong> / 10</td><td><span class="phase-badge badge-completed">Verified ✓</span></td></tr>
-            <tr><td>Validation Framework</td><td>Smoke testing, row count reconciliation, schema check</td><td><strong>9.5</strong> / 10</td><td><span class="phase-badge badge-completed">Verified ✓</span></td></tr>
-            <tr><td>Rollback Strategy</td><td>Fast-revert, backward deployment, backup restore</td><td><strong>9.5</strong> / 10</td><td><span class="phase-badge badge-completed">Verified ✓</span></td></tr>
-            <tr><td>Fabric Ecosystem</td><td>OneLake, Direct Lake, Capacities, Item types</td><td><strong>9.0</strong> / 10</td><td><span class="phase-badge badge-completed">Verified ✓</span></td></tr>
-            <tr><td>Troubleshooting & RCA</td><td>Root Cause Analysis, failure diagnosis, mitigation</td><td><strong>9.0</strong> / 10</td><td><span class="phase-badge badge-completed">Verified ✓</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="section-title">
-        Reorganized Power BI & Fabric Deployment Knowledge Framework
-        <span>Authoritative 6-Bucket Lifecycle Architecture</span>
-      </div>
-
-      <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.25rem;">
-        
-        <!-- BUCKET 1 -->
-        <div class="card" style="border-left: 4px solid var(--accent-blue);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <span class="code-pill" style="color: var(--accent-blue); border-color: rgba(59, 130, 246, 0.3);">BUCKET 1</span>
-              <strong style="font-size: 1.05rem; color: var(--text-primary);">Foundation, Workspace Topology & Consumption Design</strong>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">Topology • RBAC • Storage Modes • Apps</span>
-          </div>
-
-          <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
-            <div>
-              <strong style="color: var(--accent-blue);">1. Workspace Segregation & Cardinality:</strong>
-              <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
-                <li><strong>Dev Isolation (CL-07):</strong> Independent Dev workspaces isolate sprint cadences (e.g. weekly sales vs monthly financial close), prevent simultaneous <code>.pbix</code> publish collisions, and protect sensitive domain data during active development.</li>
-                <li><strong>1:1 Stage Cardinality (CL-05):</strong> Power BI native Deployment Pipelines enforce a strict 1:1 workspace mapping per stage (<code>Dev -> Test -> Prod</code>). Multi-team parallel development is handled via domain-specific pipelines or Git branching.</li>
-              </ul>
-            </div>
-
-            <div>
-              <strong style="color: var(--accent-blue);">2. Access Governance & Separation of Duties:</strong>
-              <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
-                <li><strong>Least-Privilege RBAC (CL-15):</strong> Developers hold <strong>Contributor/Member</strong> roles in Dev, <strong>Viewer</strong> in Test, and <strong>No Direct Access</strong> (or Viewer) in Production.</li>
-                <li><strong>Production Distribution Standard (CL-06):</strong> End users access production solely through a published <strong>Power BI App</strong> with audience-level targeting, never direct workspace membership.</li>
-              </ul>
-            </div>
-
-            <div>
-              <strong style="color: var(--accent-blue);">3. Artifact Lifecycle & Storage Mechanics:</strong>
-              <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
-                <li><strong>Artifact Dependency (CL-02):</strong> Report visuals bind strictly to the underlying semantic model schema. Deploying a report without its updated dataset causes visual breakage (<em>'Field Not Found'</em>).</li>
-                <li><strong>Import Cache Lifecycle (CL-09, CL-29):</strong> Deployment pipelines transfer model definitions and schema metadata <strong>only</strong>. The cached VertiPaq data rows are <strong>never</strong> copied across stages (<code>Dev: 605 rows -> Test: 0 rows initially</code>).</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- BUCKET 2 -->
-        <div class="card" style="border-left: 4px solid var(--accent-indigo);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <span class="code-pill" style="color: var(--accent-indigo); border-color: rgba(99, 102, 241, 0.3);">BUCKET 2</span>
-              <strong style="font-size: 1.05rem; color: var(--text-primary);">Model Engineering, PBIP / TMDL & CI/CD Quality Gates</strong>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">Source Control • PR Governance • Tabular Editor BPA</span>
-          </div>
-
-          <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
-            <div>
-              <strong style="color: var(--accent-indigo);">1. Source Control & Text Serialization:</strong>
-              <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
-                <li><strong>Git vs Pipeline Separation (CL-03):</strong> Git tracks text definitions, version history, and branching; Deployment Pipelines manage stage assignments, environment swapping, and runtime promotion.</li>
-                <li><strong>TMDL & PBIP Serialization (CL-21):</strong> Power BI Project (<code>.pbip</code>) format breaks monolithic binary models into individual, human-readable text files per table, measure, and partition (<code>.tmdl</code>), enabling clean line-by-line diffs.</li>
-              </ul>
-            </div>
-
-            <div>
-              <strong style="color: var(--accent-indigo);">2. Multi-Team Branching Strategy:</strong>
-              <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
-                <li><strong>Shared Core Model Collaboration (CL-16):</strong> Developers work in dedicated feature branches (<code>feature/finance</code>, <code>feature/sales</code>), validate changes via Pull Requests (PRs), and merge into <code>main</code> to prevent unresolvable binary merge conflicts.</li>
-              </ul>
-            </div>
-
-            <div>
-              <strong style="color: var(--accent-indigo);">3. Automated Code Quality & Linting Gates:</strong>
-              <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
-                <li><strong>PR Code Review (CL-22):</strong> Peer inspection validates M query parameterization, DAX measure logic, and schema regressions before merging into <code>main</code>.</li>
-                <li><strong>Automated CI with Tabular Editor BPA (CL-23):</strong> GitHub Actions runs <code>TabularEditor.exe /analyze</code> to enforce 50+ Best Practice Analyzer rules (e.g. formatting DAX, hiding foreign keys, requiring descriptions), automatically blocking PRs on technical debt.</li>
-                <li><strong>TMSL / BIM Schema Diff (CL-10, CL-20):</strong> Pipeline comparison engines evaluate JSON/TMSL metadata across stages, displaying divergence badges and exact item differences before promotion.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- BUCKET 3 -->
-        <div class="card" style="border-left: 4px solid var(--accent-purple);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <span class="code-pill" style="color: var(--accent-purple); border-color: rgba(168, 85, 247, 0.3);">BUCKET 3</span>
-              <strong style="font-size: 1.05rem; color: var(--text-primary);">Power Query Parameterization & Deployment Rules</strong>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">Decoupling • Target Stage Binding • Schema Parity</span>
-          </div>
-
-          <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
-            <div>
-              <strong style="color: var(--accent-purple);">1. Environment Decoupling:</strong>
-              <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
-                <li><strong>Decoupling Risk (CL-04):</strong> Models deployed without parameters or rules remain connected to upstream Dev/Test sources, exposing test data in Production.</li>
-                <li><strong>Parameter Target (CL-08):</strong> Defining Power Query parameters (<code>p_ServerName</code>, <code>p_DatabaseName</code>, <code>p_FilePath</code>) enables pipeline deployment rules to swap connections dynamically during promotion.</li>
-              </ul>
-            </div>
-
-            <div>
-              <strong style="color: var(--accent-purple);">2. Deployment Rules Configuration Flow:</strong>
-              <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
-                <li><strong>Target-Stage Rule Configuration (CL-11):</strong> Rules are configured on the <strong>target stage</strong> (Test / Prod), not the source. The promotion engine intercepts parameters and swaps values before saving to the target workspace.</li>
-                <li><strong>Initial Deployment Precondition (CL-12):</strong> Rules cannot be configured on an empty stage. The initial deployment establishes the dataset definition; subsequent rule configuration persists for all future promotions.</li>
-                <li><strong>Rule Divergence Badge (CL-13):</strong> When a deployment rule is active, the dataset displays an orange "Different from source" indicator, confirming active parameter divergence.</li>
-              </ul>
-            </div>
-
-            <div>
-              <strong style="color: var(--accent-purple);">3. Defensive Power Query Architecture:</strong>
-              <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
-                <li><strong>Schema Drift Resilience (CL-25):</strong> If downstream environments alter sheet names or table structures, hardcoded navigation (<code>[Item="Sales_2026"]</code>) crashes refresh. Models must maintain schema parity or use defensive indexing (<code>Source{0}[Data]</code>).</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- BUCKET 4 -->
-        <div class="card" style="border-left: 4px solid var(--accent-amber);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <span class="code-pill" style="color: var(--accent-amber); border-color: rgba(245, 158, 11, 0.3);">BUCKET 4</span>
-              <strong style="font-size: 1.05rem; color: var(--text-primary);">Pipeline Promotion, Refresh & Gateway Infrastructure</strong>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">Execution • Cache Hydration • HA Gateways • REST APIs</span>
-          </div>
-
-          <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
-            <div>
-              <strong style="color: var(--accent-amber);">1. Deployment vs Refresh Execution:</strong>
-              <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
-                <li><strong>Deployment Moves Model, Refresh Loads Data (CL-19, CL-29):</strong> Data refresh updates rows from the connected source according to the cloud schema; it cannot pull new measures/columns from local Desktop files without a new deployment/publish.</li>
-                <li><strong>Two Mandatory Target Configurations (CL-30):</strong> (1) <em>Parameter Deployment Rules:</em> Bind dataset to target connection; (2) <em>Authenticated Refresh & Credentials:</em> Configure Gateway / OAuth2 credentials and trigger post-deployment refresh to populate the VertiPaq cache.</li>
-              </ul>
-            </div>
-
-            <pre style="background: #0f172a; padding: 0.75rem 1rem; border-radius: 6px; font-family: monospace; font-size: 0.8rem; color: #38bdf8; margin: 0.35rem 0;">
-DEV (605 rows) ──[Deploy via Pipeline (Schema Only)]──> TEST (0 rows) ──[Authenticated Refresh]──> TEST (600 rows)</pre>
-
-            <div>
-              <strong style="color: var(--accent-amber);">2. Gateway Infrastructure & Cloud Modernization:</strong>
-              <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
-                <li><strong>Gateway Requirements (CL-01):</strong> Cloud compute (Power BI Service) cannot reach local file paths (<code>D:\...</code>) without an On-Premises Data Gateway.</li>
-                <li><strong>HA Clusters & Cloud-Native Storage (CL-26):</strong> Eliminate gateway failure points by deploying High-Availability Gateway Clusters or migrating files to cloud storage (SharePoint Online, Azure SQL, OneLake) for direct cloud-to-cloud OAuth2 refresh.</li>
-              </ul>
-            </div>
-
-            <div>
-              <strong style="color: var(--accent-amber);">3. Automated CI/CD Execution:</strong>
-              <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
-                <li><strong>Fabric REST API & Service Principals (CL-24):</strong> GitHub Actions executes <code>POST /v1/workspaces/.../deployStage</code> via Azure Entra ID Service Principals, enforcing zero developer production access and deterministic automated deployments (<code>Deploy -> Refresh -> Smoke Test Query</code>).</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- BUCKET 5 -->
-        <div class="card" style="border-left: 4px solid var(--accent-emerald);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <span class="code-pill" style="color: var(--accent-emerald); border-color: rgba(16, 185, 129, 0.3);">BUCKET 5</span>
-              <strong style="font-size: 1.05rem; color: var(--text-primary);">Security, Compliance, Auditing & Governance</strong>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">RLS • Freeze Windows • Dual Audit Trails • Master Blueprint</span>
-          </div>
-
-          <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
-            <div>
-              <strong style="color: var(--accent-emerald);">1. Security Lifecycle:</strong>
-              <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
-                <li><strong>Row-Level Security (RLS) Propagation (CL-14):</strong> RLS DAX rules deploy automatically with the model schema. User and Entra security group memberships must be mapped per workspace/dataset in Power BI Service.</li>
-              </ul>
-            </div>
-
-            <div>
-              <strong style="color: var(--accent-emerald);">2. Freeze Windows & Dual Auditability:</strong>
-              <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
-                <li><strong>Production Freeze Windows (CL-18):</strong> Enforced during financial close periods by revoking stage deployment permissions or locking CI/CD Service Principal pipeline triggers.</li>
-                <li><strong>Dual Audit Trails (CL-17):</strong> <em>Git Commit History</em> provides cryptographic, line-by-line proof of exact TMDL DAX and M query changes; <em>Deployment Pipeline History</em> provides an environment-level record of deployer identity, timestamp, items deployed, and change ticket notes.</li>
-                <li><strong>Master Blueprint Synthesis (CL-28):</strong> Integrates Multi-Team Git authoring, Regulatory Compliance role locks, and Sandbox 3-Gate graduation into a single enterprise governance standard.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- BUCKET 6 -->
-        <div class="card" style="border-left: 4px solid var(--accent-rose);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <span class="code-pill" style="color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);">BUCKET 6</span>
-              <strong style="font-size: 1.05rem; color: var(--text-primary);">Validation, Rollback & Incident Recovery</strong>
-            </div>
-            <span style="font-size: 0.8rem; color: var(--text-muted);">Forward-Only Pipelines • Git Revert • Cache Invalidation</span>
-          </div>
-
-          <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
-            <div>
-              <strong style="color: var(--accent-rose);">1. Pipeline Limitations & Git Recovery:</strong>
-              <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
-                <li><strong>Forward-Only Pipeline Limitation (CL-27):</strong> Deployment pipelines do not store historical snapshots and offer no UI rollback button.</li>
-              </ul>
-            </div>
-
-            <div>
-              <strong style="color: var(--accent-rose);">2. Step-by-Step Rollback Workflow (CL-27, CL-30):</strong>
-              <ul style="padding-left: 1.25rem; margin-top: 0.25rem;">
-                <li><strong>Step 1:</strong> Run <code>git revert &lt;commit-sha&gt;</code> on the PBIP / TMDL branch.</li>
-                <li><strong>Step 2:</strong> Merge the revert PR into <code>main</code> (synchronizing the Dev workspace).</li>
-                <li><strong>Step 3:</strong> Fast-forward promote the restored model through the pipeline (<code>Dev -> Test -> Prod</code>).</li>
-                <li><strong>Step 4 (Cache Invalidation):</strong> Trigger an immediate post-rollback <strong>Data Refresh</strong> in Production to purge corrupt VertiPaq cache and recalculate visuals before reopening user access.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- END-TO-END WALKTHROUGH EXAMPLE CARD -->
-        <div class="card" style="background: rgba(15, 23, 42, 0.9); border: 2px solid var(--accent-blue); margin-top: 1rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
-            <span class="code-pill" style="color: var(--accent-blue); border-color: var(--accent-blue);">MASTER EXAMPLE</span>
-            <strong style="font-size: 1.1rem; color: var(--text-primary);">Complete End-to-End Enterprise Deployment Walkthrough</strong>
-          </div>
-          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
-            A concrete walkthrough showing how all 6 buckets connect seamlessly across an enterprise release lifecycle:
-          </p>
-
-          <pre style="background: #0b0f19; padding: 1.25rem; border-radius: 8px; font-family: monospace; font-size: 0.82rem; color: #38bdf8; line-height: 1.6; overflow-x: auto; border: 1px solid var(--border-color);">
-[ Step 1: Model Authoring & Version Control ] (Buckets 1 & 2)
-Developer creates a measure in Power BI Desktop saved as .pbip (TMDL).
-Parameters defined: p_ServerName = "dev-sql.database.windows.net".
-Committed to branch: feature/sales-kpi.
-                 │
-                 ▼
-[ Step 2: Automated CI Quality Gate ] (Bucket 2)
-PR submitted to GitHub repository.
-GitHub Actions runs Tabular Editor BPA CLI:
-• Checks: Zero unformatted DAX, all FKs hidden, descriptions present.
-• PR approved and merged into 'main'.
-                 │
-                 ▼
-[ Step 3: Dev Workspace Deployment ] (Buckets 1 & 4)
-Fabric Git integration syncs 'main' into 'Sales_Dev' workspace.
-Developers have Contributor access to verify data in Dev.
-                 │
-                 ▼
-[ Step 4: Staged Promotion to Test ] (Buckets 3 & 4)
-Release Engineer promotes semantic model from Dev -> Test in Deployment Pipeline.
-• Target Stage Rule applied: p_ServerName overrides to "test-sql.database.windows.net".
-• Deployment moves schema (Test has 0 cached rows).
-• Authenticated Refresh triggered via Gateway / OAuth2 -> Test VertiPaq cache loads 600 rows.
-                 │
-                 ▼
-[ Step 5: QA, RLS & Compliance Sign-Off ] (Bucket 5)
-QA and Business Controllers test in 'Sales_Test' (Developers demoted to Viewers).
-Controllers verify RLS roles against general ledger numbers and approve Jira ticket CR-9042.
-                 │
-                 ▼
-[ Step 6: Automated Production Promotion ] (Buckets 4 & 5)
-GitHub Actions triggers Fabric REST API using Azure Entra ID Service Principal.
-• Model promoted to 'Sales_Prod' (Developers have NO direct workspace access).
-• Production Deployment Rule applied: p_ServerName overrides to "prod-sql.database.windows.net".
-• Production cloud refresh executes automatically.
-• Pipeline log records: "Deployed by Service Principal under Ticket CR-9042".
-                 │
-                 ▼
-[ Step 7: End-User Consumption ] (Bucket 1)
-End users consume dashboards through the corporate Power BI App with Audience targeting.
-                 │
-                 ▼
-[ Step 8: Incident Rollback (If Bug Discovered) ] (Bucket 6)
-If DAX calculation bug is detected:
-1. Revert commit in Git (git revert <commit-sha>).
-2. Merge revert PR into 'main'.
-3. Fast-forward promote through pipeline to 'Sales_Prod'.
-4. Trigger immediate Data Refresh to purge stale VertiPaq cache and recalculate visuals.</pre>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- EVIDENCE & BASELINE TAB -->
-    <section id="evidence" class="tab-content">
-      <div class="section-title">
-        Baseline Inventory & Evidence Locker
-        <span>Audit Trail & Artifact Evidence</span>
-      </div>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>File Name</th>
-              <th>Type</th>
-              <th>Size</th>
-              <th>Initial Assessment</th>
-              <th>Backup Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>_4b6dfb771b5c49869642ad19c408cd7e_Dataset.xlsx</code></td>
-              <td>Excel Data Source</td>
-              <td>14.7 KB</td>
-              <td>Primary flat-file data source</td>
-              <td><span class="phase-badge badge-completed">Verified in backup_baseline ✓</span></td>
-            </tr>
-            <tr>
-              <td><code>_fd43a58ae8124fa6b46e93e5c882123a_Report.pbix</code></td>
-              <td>Power BI Desktop File</td>
-              <td>51.0 KB</td>
-              <td>Core report & semantic model</td>
-              <td><span class="phase-badge badge-completed">Verified in backup_baseline ✓</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- TROUBLESHOOTING KB TAB -->
-    <section id="troubleshooting" class="tab-content">
-      <div class="section-title">
-        Troubleshooting Knowledge Base
-        <span>Failure Injection & Mitigation Log</span>
-      </div>
-
-      <div class="card" style="border-left: 4px solid var(--accent-rose); margin-bottom: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span class="code-pill" style="color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);">TB-01</span>
-            <strong style="font-size: 1rem; color: var(--text-primary);">Visuals Error / Empty Data in Test/Prod after Pipeline Promotion</strong>
-          </div>
-          <span class="phase-badge badge-progress" style="background: rgba(244, 63, 94, 0.15); color: var(--accent-rose);">Resolved & Documented</span>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; font-size: 0.88rem; margin-top: 0.75rem;">
-          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
-            <strong style="color: var(--accent-amber);">Root Cause Analysis (RCA):</strong>
-            <ul style="list-style: none; margin-top: 0.5rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.3rem;">
-              <li>• <strong>Import Cache Behavior</strong>: Deployment pipelines copy schema & metadata only; cached VertiPaq table rows are NOT transferred downstream.</li>
-              <li>• <strong>Empty Semantic Model</strong>: Downstream models contain 0 rows until refreshed.</li>
-              <li>• <strong>Local Gateway Barrier</strong>: Local paths (<code>D:\...</code>) in parameters require an On-Premises Data Gateway to refresh in cloud service.</li>
-            </ul>
-          </div>
-
-          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
-            <strong style="color: var(--accent-emerald);">Production Remediation & Fix:</strong>
-            <ul style="list-style: none; margin-top: 0.5rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.3rem;">
-              <li>• Store enterprise datasets in Cloud Storage (SharePoint Online / OneLake / ADLS Gen2 / Azure SQL) for native cloud refresh.</li>
-              <li>• For local files, configure an active On-Premises Gateway.</li>
-              <li>• Always trigger an immediate post-deployment refresh on target stages.</li>
-            </ul>
-          </div>
-        </div>
-
-        <div style="margin-top: 1rem; font-size: 0.85rem; background: rgba(56, 189, 248, 0.08); padding: 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid var(--accent-blue);">
-          <strong>Governance & Prevention Gate:</strong> Include mandatory <em>Gate 2 (Post-Deployment Refresh & Gateway Check)</em> in the deployment validation checklist before releasing reports to business users.
-        </div>
-      </div>
-
-      <div class="card" style="border-left: 4px solid var(--accent-amber); margin-bottom: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span class="code-pill" style="color: var(--accent-amber); border-color: rgba(245, 158, 11, 0.3);">TB-02</span>
-            <strong style="font-size: 1rem; color: var(--text-primary);">New Column/Measure in Desktop Not Appearing after Cloud Data Refresh</strong>
-          </div>
-          <span class="phase-badge badge-progress" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber);">Resolved & Documented</span>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; font-size: 0.88rem; margin-top: 0.75rem;">
-          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
-            <strong style="color: var(--accent-amber);">Root Cause Analysis (RCA):</strong>
-            <ul style="list-style: none; margin-top: 0.5rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.3rem;">
-              <li>• <strong>Schema vs Data Refresh</strong>: Cloud data refresh extracts updated data rows for the <em>existing</em> cloud schema only. It does not monitor local <code>.pbix</code> files or alter dataset metadata.</li>
-              <li>• <strong>Saved vs Published</strong>: Saving in Desktop only updates the local file on disk; it does not deploy model schema to Power BI Service.</li>
-            </ul>
-          </div>
-
-          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
-            <strong style="color: var(--accent-emerald);">Production Remediation & Fix:</strong>
-            <ul style="list-style: none; margin-top: 0.5rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.3rem;">
-              <li>• Click <strong>Publish</strong> in Power BI Desktop to upload the new schema to <code>finanance_dev</code>.</li>
-              <li>• Open Deployment Pipeline &rarr; confirm orange comparison indicator &rarr; deploy to Test and Prod.</li>
-            </ul>
-          </div>
-        </div>
-
-        <div style="margin-top: 1rem; font-size: 0.85rem; background: rgba(56, 189, 248, 0.08); padding: 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid var(--accent-blue);">
-          <strong>Architectural Rule:</strong> Differentiate between <em>Schema Changes</em> (require Publish / Git PR) and <em>Data Changes</em> (require Data Refresh).
-        </div>
-      </div>
-
-      <div class="card" style="border-left: 4px solid var(--accent-amber); margin-bottom: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span class="code-pill" style="color: var(--accent-amber); border-color: rgba(245, 158, 11, 0.3);">TB-03</span>
-            <strong style="font-size: 1rem; color: var(--text-primary);">Downstream Refresh Failure: 'The key didn't match any rows in the table'</strong>
-          </div>
-          <span class="phase-badge badge-progress" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber);">Resolved & Documented</span>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; font-size: 0.88rem; margin-top: 0.75rem;">
-          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
-            <strong style="color: var(--accent-amber);">Root Cause Analysis (RCA):</strong>
-            <ul style="list-style: none; margin-top: 0.5rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.3rem;">
-              <li>• <strong>Environment Schema Drift</strong>: Parameterized deployment redirected dataset to the Test/Prod source, but the sheet name (e.g. <code>Sales_2026</code>) or table structure in the Test/Prod file did not match the hardcoded M navigation key.</li>
-              <li>• <strong>Desktop False Confidence</strong>: It worked on Desktop because the developer's local Dev workbook had the new sheet name, while the Test environment source had not been updated.</li>
-            </ul>
-          </div>
-
-          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
-            <strong style="color: var(--accent-emerald);">Production Remediation & Fix:</strong>
-            <ul style="list-style: none; margin-top: 0.5rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.3rem;">
-              <li>• <strong>Schema Parity</strong>: Align the Test/Prod source file schema (sheet/table names) with the model contract.</li>
-              <li>• <strong>Defensive Power Query</strong>: Refactor M code to use dynamic indexing (<code>Source{0}[Data]</code>) instead of hardcoded key lookup.</li>
-              <li>• <strong>CI Pre-Flight Checks</strong>: Run automated schema validation against target test databases before promotion.</li>
-            </ul>
-          </div>
-        </div>
-
-        <div style="margin-top: 1rem; font-size: 0.85rem; background: rgba(56, 189, 248, 0.08); padding: 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid var(--accent-blue);">
-          <strong>Architectural Rule:</strong> Environment parameters decouple connection paths, but <em>schema parity</em> across physical sources must be strictly guaranteed.
-        </div>
-      </div>
-
-      <div class="card" style="border-left: 4px solid var(--accent-amber); margin-bottom: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span class="code-pill" style="color: var(--accent-amber); border-color: rgba(245, 158, 11, 0.3);">TB-04</span>
-            <strong style="font-size: 1rem; color: var(--text-primary);">Gateway Timeout & Credential Expiration: DM_GWPipeline_Gateway_InvalidConnectionCredentials</strong>
-          </div>
-          <span class="phase-badge badge-progress" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber);">Resolved & Documented</span>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; font-size: 0.88rem; margin-top: 0.75rem;">
-          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
-            <strong style="color: var(--accent-amber);">Root Cause Analysis (RCA):</strong>
-            <ul style="list-style: none; margin-top: 0.5rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.3rem;">
-              <li>• <strong>Gateway VM Offline/Asleep</strong>: Host machine running the Gateway service was powered down, entered sleep/hibernation, or lost network connection.</li>
-              <li>• <strong>Expired Credentials</strong>: Windows account, database login, or service account password expired or was reset without updating the cloud gateway connection settings.</li>
-            </ul>
-          </div>
-
-          <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
-            <strong style="color: var(--accent-emerald);">Production Remediation & Fix:</strong>
-            <ul style="list-style: none; margin-top: 0.5rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.3rem;">
-              <li>• <strong>High Availability (HA) Clusters</strong>: Deploy gateway clusters across 2+ dedicated Azure VMs with auto-failover and load balancing.</li>
-              <li>• <strong>Service Principal Authentication</strong>: Use Azure Entra ID Service Principals with Managed Identities and non-expiring client secrets for database connections.</li>
-              <li>• <strong>Cloud Storage Migration</strong>: Modernize on-prem files to SharePoint Online / OneLake / ADLS Gen2 for direct, gateway-less cloud refreshes.</li>
-            </ul>
-          </div>
-        </div>
-
-        <div style="margin-top: 1rem; font-size: 0.85rem; background: rgba(56, 189, 248, 0.08); padding: 0.75rem; border-radius: var(--radius-sm); border-left: 3px solid var(--accent-blue);">
-          <strong>Architectural Standard:</strong> Eliminate single points of failure by implementing HA Gateway Clusters and migrating enterprise storage to cloud-native repositories.
-        </div>
-      </div>
-    </section>
-
-    <!-- REVISION CENTER TAB -->
-    <section id="revision" class="tab-content">
-      <div class="section-title">
-        Revision Center & Remediated Knowledge Gaps
-        <span>Adaptive Coaching & Exam/Interview Review</span>
-      </div>
-
-      <div class="card" style="border-left: 4px solid var(--accent-purple); margin-bottom: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span class="code-pill" style="color: var(--accent-purple); border-color: rgba(168, 85, 247, 0.3);">GAP-01 • Phase 9</span>
-            <strong style="font-size: 1rem; color: var(--text-primary);">Import Cache Promotion & Empty Visuals Misconception</strong>
-          </div>
-          <span class="phase-badge badge-completed" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">Remediated & Mastered ✓</span>
-        </div>
-        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
-          <strong>Initial Confusion:</strong> Why reports in Test and Prod rendered empty visuals or gateway errors immediately after deployment pipeline promotion, even though Dev rendered data properly.
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+          Goal: Determine tenant capabilities (Plan A vs Plan B), establish local PostgreSQL databases, generate reproducible ERP data, configure SharePoint seed workbooks, and author architecture baseline.
         </p>
-        <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.88rem;">
-          <strong style="color: var(--accent-blue);">Key Architectural Takeaway:</strong>
-          <p style="margin-top: 0.35rem; color: #cbd5e1;">Deployment pipelines copy <strong>model schema and definitions only</strong>. The cached VertiPaq table rows are NOT copied downstream. Downstream stages have 0 rows until an explicit post-deployment data refresh is triggered. For local file paths (<code>D:\...</code>), an active On-Premises Gateway connection is mandatory.</p>
-        </div>
+        <ul class="task-list">
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t01" checked />
+            <label for="t01"><strong>Task 0.1: Tenant Discovery</strong> — Verify Entra ID admin role, user creation, and App Registration rights. <span style="color: var(--accent-green); font-weight: 600;">(Plan A Confirmed)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t02" checked />
+            <label for="t02"><strong>Task 0.2: Azure DevOps Repo</strong> — Setup Brightline-Analytics project, repo, and commit skeleton with .gitignore. <span style="color: var(--accent-green); font-weight: 600;">(Done)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t03" checked />
+            <label for="t03"><strong>Task 0.3: PostgreSQL Environment</strong> — Create brightline_dev, brightline_test, brightline_prod databases + schema DDL. <span style="color: var(--accent-green); font-weight: 600;">(Done — 5 tables × 3 DBs)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t04" checked />
+            <label for="t04"><strong>Task 0.4: Seeded Data Generator</strong> — Run generate_data.py to populate 250k (DEV) and 2.5M (PROD/TEST) rows; reconcile validation queries. <span style="color: var(--accent-green); font-weight: 600;">(Done — 5.25M rows total)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t05" checked />
+            <label for="t05"><strong>Task 0.5: SharePoint Cloud Sources</strong> — Setup SharePoint library with Targets.xlsx and UserSecurity.xlsx. <span style="color: var(--accent-green); font-weight: 600;">(Done — Deployed to OneDrive)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t06" checked />
+            <label for="t06"><strong>Task 0.6: Architecture Blueprint</strong> — Author docs/architecture.md and complete the initial Phase 0 gate exam. <span style="color: var(--accent-green); font-weight: 600;">(Done — Blueprint Published)</span></label>
+          </li>
+        </ul>
       </div>
 
-      <div class="card" style="border-left: 4px solid var(--accent-purple); margin-bottom: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span class="code-pill" style="color: var(--accent-purple); border-color: rgba(168, 85, 247, 0.3);">GAP-02 • Phase 11</span>
-            <strong style="font-size: 1rem; color: var(--text-primary);">Multi-Team Semantic Model Architecture: Pipelines vs Git Branching</strong>
+      <div class="phase-card">
+        <div class="phase-header">
+          <div>
+            <span class="badge badge-green">COMPLETED</span>
+            <span class="phase-title" style="margin-left: 0.5rem;">Phase 1 — Semantic Model Build in Desktop (Import Mode & PBIP)</span>
           </div>
-          <span class="phase-badge badge-completed" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">Remediated & Mastered ✓</span>
+          <span class="status-tag status-completed">✔ Gate Score: 85 / 100</span>
         </div>
-        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
-          <strong>Initial Confusion:</strong> When to choose between Option B (Domain-Specific Pipelines) versus Option C (Git PBIP Feature Branching).
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+          Goal: Build production-grade Semantic Model in Power BI Desktop (PBIP format) with M Parameters for environment switching, query folding discipline, Star Schema modeling, 22 documented DAX measures, and BPA compliance.
         </p>
-        <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.88rem;">
-          <strong style="color: var(--accent-blue);">Key Architectural Takeaway:</strong>
-          <p style="margin-top: 0.35rem; color: #cbd5e1;">
-            • <strong>Option B (Domain-Specific Pipelines)</strong>: Use for independent squad datasets/reports with different release cadences, converging at the Power BI App level.<br>
-            • <strong>Option C (Git PBIP Feature Branching)</strong>: Mandatory when multiple developers co-author the <em>exact same single enterprise core semantic model</em>, because deployment pipelines cannot merge conflicting DAX measure edits inside one file.
-          </p>
-        </div>
+        <ul class="task-list">
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t11" checked />
+            <label for="t11"><strong>Task 1.1: Power BI Desktop Project (.PBIP) Setup</strong> — Enable PBIP preview feature, initialize project structure, configure M Parameters (Server, Database, RangeStart, RangeEnd). <span style="color: var(--accent-green); font-weight: 600;">(Done — PBIP & TMDL)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t12" checked />
+            <label for="t12"><strong>Task 1.2: Power Query Ingestion & Folding Verification</strong> — Ingest 5 ERP tables + 2 Excel tables, verify Native Query folding on date filters. <span style="color: var(--accent-green); font-weight: 600;">(Done — Native Query Verified)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t13" checked />
+            <label for="t13"><strong>Task 1.3: Star Schema & Date Dimension</strong> — Establish 1-to-many single directional relationships, author dynamic M/DAX Date table. <span style="color: var(--accent-green); font-weight: 600;">(Done — Star Schema Built)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t14" checked />
+            <label for="t14"><strong>Task 1.4: DAX Measure Library (22 Core Measures)</strong> — Author Base, Time Intelligence, Target Variance, and Margin metrics in organized display folders. <span style="color: var(--accent-green); font-weight: 600;">(Done — 22 Measures in 4 Folders)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t15" checked />
+            <label for="t15"><strong>Task 1.5: Tabular Editor Best Practice Analyzer (BPA)</strong> — Run Tabular Editor BPA rules, fix formatting/unhidden key violations, export clean TMDL. <span style="color: var(--accent-green); font-weight: 600;">(Done — BPA Compliant)</span></label>
+          </li>
+        </ul>
       </div>
 
-      <div class="card" style="border-left: 4px solid var(--accent-purple); margin-bottom: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span class="code-pill" style="color: var(--accent-purple); border-color: rgba(168, 85, 247, 0.3);">GAP-03 • Phase 13</span>
-            <strong style="font-size: 1rem; color: var(--text-primary);">Schema Modifications vs Cloud Data Refresh Boundary</strong>
+      <div class="phase-card">
+        <div class="phase-header">
+          <div>
+            <span class="badge badge-green">COMPLETED</span>
+            <span class="phase-title" style="margin-left: 0.5rem;">Phase 2 — Publish & Semantic Model Management in Service</span>
           </div>
-          <span class="phase-badge badge-completed" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">Remediated & Mastered ✓</span>
+          <span class="status-tag status-completed">✔ Gate Score: 90 / 100</span>
         </div>
-        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
-          <strong>Initial Confusion:</strong> Why saving a newly added calculated column (<code>SalesAmountQty</code>) in Desktop did not show up in Power BI Service after triggering cloud Data Refresh.
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+          Goal: Activate Individual Trial, establish BL-Sales-DEV workspace, publish semantic model, author 3 thin reports via Live Connection, configure model settings/endorsement, and master Read vs Build permissions & dataset takeover.
         </p>
-        <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.88rem;">
-          <strong style="color: var(--accent-blue);">Key Architectural Takeaway:</strong>
-          <p style="margin-top: 0.35rem; color: #cbd5e1;">A cloud data refresh updates rows for the <em>existing cloud schema</em>. It does not monitor local <code>.pbix</code> files. Structural schema changes (new measures/columns) require an explicit <strong>Publish</strong> from Desktop or Git PR merge to deploy the new model definition.</p>
-        </div>
+        <ul class="task-list">
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t21" checked />
+            <label for="t21"><strong>Task 2.1: Start Individual Power BI Pro Trial</strong> — Activate 60-day individual license trial in Power BI Service for learner account. <span style="color: var(--accent-green); font-weight: 600;">(Done — 47 Days Active)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t22" checked />
+            <label for="t22"><strong>Task 2.2: Workspace Setup & First Publish</strong> — Create 'BL-Sales-DEV' workspace and publish Brightline_Sales semantic model. <span style="color: var(--accent-green); font-weight: 600;">(Done — BL-Sales-DEV Published)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t23" checked />
+            <label for="t23"><strong>Task 2.3: Build 3 Thin Reports (Live Connection)</strong> — Author Executive Overview, Regional Sales, and Store Performance reports connected live to the published model. <span style="color: var(--accent-green); font-weight: 600;">(Done — 3 PBIP Thin Reports Populated & Pushed)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t24" checked />
+            <label for="t24"><strong>Task 2.4: Model Settings & Endorsement</strong> — Configure semantic model description, contact person, and promote status. <span style="color: var(--accent-green); font-weight: 600;">(Done — Promoted Badge Active)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t25" checked />
+            <label for="t25"><strong>Task 2.5: Read vs Build Permissions & Takeover Rehearsal</strong> — Manage direct access permissions, test Analyze in Excel, and simulate dataset takeover (Labs L4, L14). <span style="color: var(--accent-green); font-weight: 600;">(Done — Passed Gate Exam 90/100)</span></label>
+          </li>
+        </ul>
       </div>
 
-      <div class="card" style="border-left: 4px solid var(--accent-purple); margin-bottom: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span class="code-pill" style="color: var(--accent-purple); border-color: rgba(168, 85, 247, 0.3);">GAP-04 • Phase 15</span>
-            <strong style="font-size: 1rem; color: var(--text-primary);">Fabric REST API & Service Principal Security vs Manual UI Deployment</strong>
+      <div class="phase-card">
+        <div class="phase-header">
+          <div>
+            <span class="badge badge-green">COMPLETED</span>
+            <span class="phase-title" style="margin-left: 0.5rem;">Phase 3 — Gateway & Refresh Deep Dive</span>
           </div>
-          <span class="phase-badge badge-completed" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">Remediated & Mastered ✓</span>
+          <span class="status-tag status-completed">✔ Gate Score: 90 / 100</span>
         </div>
-        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
-          <strong>Initial Confusion:</strong> What specific operational and compliance advantages REST APIs offer over manual UI deploy clicks.
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+          Goal: Master Standard vs Personal gateway, configure PostgreSQL connections (BL-PG-DEV/TEST/PROD), orchestrate hybrid refresh (PostgreSQL + OneDrive cloud Excel), diagnose SSL timeout & Formula.Firewall privacy errors, and complete Gateway Sabotage Labs.
         </p>
-        <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.88rem;">
-          <strong style="color: var(--accent-blue);">Key Architectural Takeaway:</strong>
-          <p style="margin-top: 0.35rem; color: #cbd5e1;">
-            1. <strong>Zero Developer Prod Access</strong>: Automated GitHub Actions uses an Azure Entra ID Service Principal, enforcing strict separation of duties.<br>
-            2. <strong>Elimination of Human Error</strong>: Automates the complete sequence (Promote Stage &rarr; Refresh Dataset &rarr; Execute DAX Smoke Test Query) without risk of missed manual steps.<br>
-            3. <strong>Cryptographic Audit Trail</strong>: Every release is tied directly to a Git commit SHA and release tag.
-          </p>
-        </div>
+        <ul class="task-list">
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t31" checked />
+            <label for="t31"><strong>Task 3.1: Gateway Service Verification</strong> — Verify On-premises Data Gateway (Standard Mode) active on DESKTOP-H5RKB3H. <span style="color: var(--accent-green); font-weight: 600;">(Done — PBIEgwService Online)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t32" checked />
+            <label for="t32"><strong>Task 3.2: Create PostgreSQL Gateway Connection</strong> — Create BL-PG-DEV connection with Basic credentials and disabled SSL encryption on localhost. <span style="color: var(--accent-green); font-weight: 600;">(Done — Online Status)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t33" checked />
+            <label for="t33"><strong>Task 3.3: Execute Scheduled / On-Demand Refresh</strong> — Bind gateway to semantic model and execute full hybrid refresh (Completed in 1m 15s). <span style="color: var(--accent-green); font-weight: 600;">(Done — Refresh Verified)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t34" checked />
+            <label for="t34"><strong>Task 3.4: Resolve Formula.Firewall Privacy Levels</strong> — Align Privacy Levels to Organizational across on-prem and cloud data sources. <span style="color: var(--accent-green); font-weight: 600;">(Done — Aligned)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t35" checked />
+            <label for="t35"><strong>Task 3.5: Sabotage Labs (L1, L2, L3, L14) & Phase 3 Gate Exam</strong> — Answer Gateway architecture questions and rehearse failure recovery. <span style="color: var(--accent-green); font-weight: 600;">(Done — Passed 90/100)</span></label>
+          </li>
+        </ul>
       </div>
 
-      <div class="card" style="border-left: 4px solid var(--accent-purple); margin-bottom: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span class="code-pill" style="color: var(--accent-purple); border-color: rgba(168, 85, 247, 0.3);">GAP-05 • Phase 16</span>
-            <strong style="font-size: 1rem; color: var(--text-primary);">Downstream Schema Drift & Navigation Key Errors</strong>
+      <div class="phase-card">
+        <div class="phase-header">
+          <div>
+            <span class="badge badge-green">COMPLETED</span>
+            <span class="phase-title" style="margin-left: 0.5rem;">Phase 4 — Security: Dynamic RLS, OLS, Permissions & Apps</span>
           </div>
-          <span class="phase-badge badge-completed" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">Remediated & Mastered ✓</span>
+          <span class="status-tag status-completed">✔ Gate Score: 92 / 100</span>
         </div>
-        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
-          <strong>Initial Question:</strong> Root-cause remediation when a promoted model fails post-promotion refresh with: <em>"The key didn't match any rows in the table"</em>.
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+          Goal: Author dynamic hierarchical Row-Level Security with single-direction Star Schema integrity, enforce Object-Level Security on sensitive cost metadata, verify multi-persona access in Desktop and Service, and publish multi-audience Power BI App.
         </p>
-        <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.88rem;">
-          <strong style="color: var(--accent-blue);">Key Architectural Takeaway:</strong>
-          <p style="margin-top: 0.35rem; color: #cbd5e1;">
-            1. <strong>Environment Contract Parity</strong>: The target Test/Prod Excel/SQL file must match the exact schema contract (table/sheet/column names) expected by the semantic model.<br>
-            2. <strong>Defensive Power Query Navigation</strong>: Refactor M queries to navigate by index (<code>Source{0}[Data]</code>) or filter dynamically, rather than hardcoding fragile literal sheet names like <code>[Item="Sales_2026"]</code>.
-          </p>
-        </div>
+        <ul class="task-list">
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t41" checked />
+            <label for="t41"><strong>Task 4.1: Security Table Architecture</strong> — Configure Security_UserPermissions as disconnected lookup table; evaluate single-direction vs bidirectional trade-offs. <span style="color: var(--accent-green); font-weight: 600;">(Done — Disconnected Architecture)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t42" checked />
+            <label for="t42"><strong>Task 4.2: Author Dynamic RLS Roles</strong> — Implement Dynamic_Security role on Dim_Stores & Fact_Targets using USERPRINCIPALNAME() and LOOKUPVALUE(). <span style="color: var(--accent-green); font-weight: 600;">(Done — Role Authored & Validated)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t43" checked />
+            <label for="t43"><strong>Task 4.3: Configure Object-Level Security (OLS)</strong> — Enforce columnPermission = none on Dim_Products[unit_cost] and evaluate broken visual failure modes. <span style="color: var(--accent-green); font-weight: 600;">(Done — OLS Enforced on unit_cost)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t44" checked />
+            <label for="t44"><strong>Task 4.4: Test 'View As' Security Personas</strong> — Verify Regional Director (North), Territory Manager (Karnataka), and Executive (Full Access) personas in Desktop. <span style="color: var(--accent-green); font-weight: 600;">(Done — All Personas Verified)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t45" checked />
+            <label for="t45"><strong>Task 4.5: Multi-Audience Power BI App</strong> — Publish secured model to BL-Sales-DEV, map security role members in Service, and build multi-audience App. <span style="color: var(--accent-green); font-weight: 600;">(Done — Multi-Audience App Live)</span></label>
+          </li>
+        </ul>
       </div>
 
-      <div class="card" style="border-left: 4px solid var(--accent-purple); margin-bottom: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span class="code-pill" style="color: var(--accent-purple); border-color: rgba(168, 85, 247, 0.3);">GAP-06 • Phase 16</span>
-            <strong style="font-size: 1rem; color: var(--text-primary);">Gateway Downtime & Expired Credentials Outage</strong>
+      <div class="phase-card">
+        <div class="phase-header">
+          <div>
+            <span class="badge badge-green">COMPLETED</span>
+            <span class="phase-title" style="margin-left: 0.5rem;">Phase 5 — Incremental Refresh & XMLA Partitions (F64 Activation)</span>
           </div>
-          <span class="phase-badge badge-completed" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">Remediated & Mastered ✓</span>
+          <span class="status-tag status-completed">✔ Gate Score: 95 / 100</span>
         </div>
-        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
-          <strong>Initial Confusion:</strong> Root causes of production gateway timeout errors and modern architectural solutions to eliminate single points of failure.
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+          Goal: Activate 60-day Microsoft Fabric F64 capacity trial, bind workspace to Premium capacity, configure native Incremental Refresh policy on Fact_Sales (RangeStart/RangeEnd), and inspect physical VertiPaq partitions via XMLA endpoint.
         </p>
-        <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.88rem;">
-          <strong style="color: var(--accent-blue);">Key Architectural Takeaway:</strong>
-          <p style="margin-top: 0.35rem; color: #cbd5e1;">
-            1. <strong>Gateway Cluster High Availability (HA)</strong>: Deploy gateways across 2+ dedicated Azure VMs with auto-recovery.<br>
-            2. <strong>Modern Cloud Storage</strong>: Migrate on-prem Excel/SQL files to SharePoint Online, Fabric OneLake, or Azure SQL for zero-gateway OAuth2/Entra ID automated cloud refreshes.
-          </p>
-        </div>
+        <ul class="task-list">
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t51" checked />
+            <label for="t51"><strong>Task 5.1: Microsoft Fabric F64 Trial Activation</strong> — Start 60-day Fabric capacity trial and assign BL-Sales-DEV workspace to Fabric capacity (Diamond icon 💎). <span style="color: var(--accent-green); font-weight: 600;">(Done — Diamond FTL4 Active)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t52" checked />
+            <label for="t52"><strong>Task 5.2: Incremental Refresh Policy Configuration</strong> — Define 3-year historical archive + 1-month incremental refresh window with Detect Data Changes on last_modified. <span style="color: var(--accent-green); font-weight: 600;">(Done — Policy Active)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t53" checked />
+            <label for="t53"><strong>Task 5.3: Initial Partition Seeding Refresh</strong> — Trigger first Service refresh to generate physical VertiPaq historical partitions without query timeout. <span style="color: var(--accent-green); font-weight: 600;">(Done — 25s Seeding Refresh)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t54" checked />
+            <label for="t54"><strong>Task 5.4: XMLA Endpoint Partition Inspection</strong> — Connect SSMS via XMLA endpoint and document physical table partition slices. <span style="color: var(--accent-green); font-weight: 600;">(Done — 2023-2026Q3 TMSL Partitions Verified)</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t55" checked />
+            <label for="t55"><strong>Task 5.5: Incremental Sabotage Labs (L9, L20) & Phase 5 Gate Exam</strong> — Rehearse non-folding filter failures and PBIX full overwrite partition wipes. <span style="color: var(--accent-green); font-weight: 600;">(Done — Passed 95/100)</span></label>
+          </li>
+        </ul>
       </div>
 
-      <!-- REV-07: Phase 18 Scenario 1 -->
-      <div class="card" style="border-left: 4px solid var(--accent-blue); margin-bottom: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span class="code-pill" style="color: var(--accent-blue); border-color: rgba(59, 130, 246, 0.3);">REV-07 • Phase 18</span>
-            <strong style="font-size: 1rem; color: var(--text-primary);">Scenario 1 Blueprint — Multi-Team Analytics Architecture</strong>
+      <div class="phase-card active-phase">
+        <div class="phase-header">
+          <div>
+            <span class="badge badge-primary">ACTIVE PHASE</span>
+            <span class="phase-title" style="margin-left: 0.5rem;">Phase 6 — Deployment Pipelines & Stage Rules</span>
           </div>
-          <span class="phase-badge badge-completed" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">Score: 10/10 (Mastery) ✓</span>
+          <span class="status-tag status-in-progress">⏳ In Progress (8h)</span>
         </div>
-        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
-          <strong>Learner Blueprint:</strong> <em>"We can create three workspaces dev, test, prod. And create three branches in git finance, sales, operation for only dev workspace. After verification and proper check only these branches will be merged in main dev branch then from there we can forward deploy to test and prod."</em>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+          Goal: Build 3-stage Fabric Deployment Pipeline (DEV → TEST → PROD), configure stage parameter rules for PostgreSQL databases, bind gateway connection rules, validate schema compare / drift detection, and execute end-to-end promotion.
         </p>
-        <div style="background: rgba(0,0,0,0.3); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
-          <strong style="color: var(--accent-blue);">Evaluation & Master Architecture (Option C — PBIP + Git Feature Branching):</strong>
-          <ul style="margin-top: 0.5rem; padding-left: 1.25rem;">
-            <li><strong>Isolated Authoring:</strong> Finance, Sales, and Operations squads develop in dedicated Git branches (<code>feature/finance</code>, <code>feature/sales</code>, <code>feature/operations</code>) using PBIP / TMDL in Power BI Desktop or Fabric Git integration.</li>
-            <li><strong>Quality Gates:</strong> Changes cannot merge into <code>main</code> (Dev) without peer code reviews and automated CI checks (Tabular Editor BPA / TMDL Linters).</li>
-            <li><strong>Deterministic Promotion:</strong> Once merged into <code>main</code>, the unified core model synchronizes to <code>Dev</code> workspace, and promotes forward through <code>Test</code> and <code>Prod</code> via the Deployment Pipeline with environment-specific deployment rules.</li>
-          </ul>
-        </div>
+        <ul class="task-list">
+          <li class="task-item" style="border-color: var(--accent-blue); box-shadow: 0 0 8px var(--glow-blue);">
+            <input type="checkbox" class="task-checkbox" id="t61" />
+            <label for="t61"><strong>Task 6.1: Create Fabric Deployment Pipeline</strong> — Create 'Brightline-Sales-Pipeline' in Power BI Service / Fabric. <span style="color: var(--accent-blue); font-weight: 600;">⬅ CURRENT</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t62" />
+            <label for="t62"><strong>Task 6.2: Assign Workspaces to Pipeline Stages</strong> — Assign BL-Sales-DEV to Development; create/assign BL-Sales-TEST and BL-Sales-PROD. <span style="color: var(--text-muted);">Pending</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t63" />
+            <label for="t63"><strong>Task 6.3: Configure Deployment Parameter Rules</strong> — Define parameter rules on PG_Database (TEST: brightline_test, PROD: brightline_prod). <span style="color: var(--text-muted);">Pending</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t64" />
+            <label for="t64"><strong>Task 6.4: Configure Gateway Connection Rules</strong> — Map TEST/PROD stages to BL-PG-TEST and BL-PG-PROD gateway connections. <span style="color: var(--text-muted);">Pending</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t65" />
+            <label for="t65"><strong>Task 6.5: DEV → TEST Promotion & Drift Engine</strong> — Deploy to TEST, trigger UAT refresh (2.5M rows), test Pipeline Compare schema drift. <span style="color: var(--text-muted);">Pending</span></label>
+          </li>
+          <li class="task-item">
+            <input type="checkbox" class="task-checkbox" id="t66" />
+            <label for="t66"><strong>Task 6.6: TEST → PROD Promotion & App Publishing</strong> — Execute final production deployment, publish certified app, and test Labs L12, L13, L17. <span style="color: var(--text-muted);">Pending</span></label>
+          </li>
+        </ul>
       </div>
 
-      <!-- REV-08: Phase 18 Scenario 2 -->
-      <div class="card" style="border-left: 4px solid var(--accent-amber); margin-bottom: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span class="code-pill" style="color: var(--accent-amber); border-color: rgba(245, 158, 11, 0.3);">REV-08 • Phase 18</span>
-            <strong style="font-size: 1rem; color: var(--text-primary);">Scenario 2 Blueprint — Regulatory Financial Compliance Architecture</strong>
-          </div>
-          <span class="phase-badge badge-completed" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">Mastered Architecture ✓</span>
+      <div class="phase-card">
+        <div class="phase-header">
+          <span class="phase-title">Phase 7 — PBIP, TMDL/PBIR & Fabric Git Integration</span>
+          <span class="status-tag status-locked">🔒 Locked (8–10h)</span>
         </div>
-        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
-          <strong>Enterprise Focus:</strong> High-compliance environments (SOX, SEC, IFRS) requiring strict separation of duties, freeze windows, and immutable dual audit trails.
-        </p>
-
-        <div style="background: rgba(0,0,0,0.3); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
-          <strong style="color: var(--accent-amber);">1. Architecture & Role Segregation (Separation of Duties)</strong>
-          <pre style="background: #0f172a; padding: 1rem; border-radius: 6px; margin: 0.75rem 0; font-family: monospace; font-size: 0.82rem; color: #38bdf8; overflow-x: auto;">
-[ Financial Analysts / Developers ]
-               |
-         (Push & PR)
-               v
-  [ GitHub Repository ] --- (Automated CI / BPA Check)
-               |
-        (Merge to Main)
-               v
-     [ Finance_Dev ]   <-- Devs: Contributor / Member
-               |
-     (Pipeline Stage 1 -> 2)
-               v
-    [ Finance_Test ]   <-- Devs: Viewer | QA / Business: Member
-               |
-     (Pipeline Stage 2 -> 3: STRICT APPROVAL GATE)
-               v
-    [ Finance_Prod ]   <-- Devs: NO ACCESS | Release Manager / Service Principal: Admin</pre>
-          <ul style="padding-left: 1.25rem; margin-bottom: 1rem;">
-            <li><strong>Finance_Dev:</strong> Developers have <strong>Contributor / Member</strong> roles to author reports and edit DAX.</li>
-            <li><strong>Finance_Test:</strong> Developers are demoted to <strong>Viewer</strong>; QA and Financial Controllers have <strong>Member</strong> access to validate against general ledger extracts.</li>
-            <li><strong>Finance_Prod:</strong> Developers have <strong>NO access</strong> (or Viewer only). Only Release Managers or Entra ID Service Principals can deploy to Production.</li>
-          </ul>
-
-          <strong style="color: var(--accent-amber);">2. Enforcing Regulatory Freeze Windows</strong>
-          <p style="margin-top: 0.35rem; margin-bottom: 1rem;">
-            During quarter-end financial closes (e.g. Q4 close):<br>
-            • <strong>Role De-elevation:</strong> Temporarily revoke stage deployment permissions on the <code>Test -> Prod</code> pipeline stage.<br>
-            • <strong>Automated Pipeline Lock:</strong> Disable production deployment triggers in GitHub Actions / Fabric REST API during the freeze window.<br>
-            • <strong>Result:</strong> Developers can fix bugs in Dev, but no changes can physically reach Prod until the freeze is lifted.
-          </p>
-
-          <strong style="color: var(--accent-amber);">3. Dual Audit Trails</strong>
-          <p style="margin-top: 0.35rem; margin-bottom: 1rem;">
-            • <strong>Git Commit & PR History:</strong> Line-by-line proof of exact TMDL formula changes, M parameter updates, and committer identity.<br>
-            • <strong>Deployment Pipeline History:</strong> Environment-level record showing deployer email, timestamp, target stage, item count, and deployment note (e.g. <em>"Release v2.4 approved by CFO under CR-9042"</em>).
-          </p>
-
-          <strong style="color: var(--accent-amber);">Real-World Example:</strong>
-          <p style="margin-top: 0.35rem; color: #94a3b8; font-style: italic;">
-            During Q4 financial audit, the CFO and Compliance Officer lock production. A tax measure update in <code>feature/tax-update</code> is PR-reviewed into <code>Finance_Dev</code>, promoted to <code>Finance_Test</code> for Controller sign-off on Jira ticket <code>FIN-7812</code>, and deployed to <code>Finance_Prod</code> exclusively by the Release Manager. Both Git PR logs and Deployment Pipeline history are exported for external SOX auditors.
-          </p>
-        </div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">TMDL hand-editing, Git-connected DEV workspace, PR branch policies, merge conflict Lab L18.</p>
       </div>
 
-      <!-- REV-09: Phase 18 Scenario 3 -->
-      <div class="card" style="border-left: 4px solid var(--accent-emerald); margin-bottom: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span class="code-pill" style="color: var(--accent-emerald); border-color: rgba(16, 185, 129, 0.3);">REV-09 • Phase 18</span>
-            <strong style="font-size: 1rem; color: var(--text-primary);">Scenario 3 Blueprint — Innovation Sandbox to Production Architecture</strong>
-          </div>
-          <span class="phase-badge badge-completed" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">Mastered Architecture ✓</span>
+      <div class="phase-card">
+        <div class="phase-header">
+          <span class="phase-title">Phase 8 — Azure DevOps CI/CD Automation</span>
+          <span class="status-tag status-locked">🔒 Locked (10–12h)</span>
         </div>
-        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
-          <strong>Enterprise Focus:</strong> Graduating rapid, unconstrained business prototypes into robust, governed enterprise production assets.
-        </p>
-
-        <div style="background: rgba(0,0,0,0.3); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
-          <strong style="color: var(--accent-emerald);">1. The Innovation Sandbox Lifecycle</strong>
-          <pre style="background: #0f172a; padding: 1rem; border-radius: 6px; margin: 0.75rem 0; font-family: monospace; font-size: 0.82rem; color: #34d399; overflow-x: auto;">
-[ Business Analyst / Data Scientist ]
-               |
-  (Ad-hoc Exploratory Analysis)
-               v
-      [ Sandbox_Workspace ]  <-- Hardcoded paths, unoptimized DAX, local files
-               |
-   =================================================
-   [ GRADUATION GATEWAY: 3-STEP REFACTORING AUDIT ]
-   =================================================
-               |
-  Gate 1: Parameterization (Convert local paths -> M Parameters)
-  Gate 2: Code Quality & BPA (Tabular Editor optimization, hide FKs, format DAX)
-  Gate 3: Version Control (Save as PBIP / TMDL -> Submit PR to GitHub)
-               |
-               v
-     [ Enterprise_Dev ]      <-- Official Dev Workspace (Source of Truth)
-               |
-     (Deployment Pipeline)
-               v
-     [ Enterprise_Test ]     <-- QA & User Acceptance Testing
-               |
-     (Deployment Pipeline + App Audience)
-               v
-     [ Enterprise_Prod ]     <-- Corporate Power BI App (Published to End Users)</pre>
-
-          <strong style="color: var(--accent-emerald);">2. The 3-Gate Graduation Checklist</strong>
-          <table style="width: 100%; margin: 0.75rem 0 1rem 0; border-collapse: collapse; font-size: 0.82rem;">
-            <thead>
-              <tr style="background: rgba(255,255,255,0.06); text-align: left;">
-                <th style="padding: 0.6rem; border: 1px solid var(--border-color); color: var(--text-primary);">Gate</th>
-                <th style="padding: 0.6rem; border: 1px solid var(--border-color); color: var(--text-primary);">Focus Area</th>
-                <th style="padding: 0.6rem; border: 1px solid var(--border-color); color: var(--text-primary);">Mandatory Requirement</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="padding: 0.6rem; border: 1px solid var(--border-color); font-weight: bold; color: var(--accent-blue);">Gate 1</td>
-                <td style="padding: 0.6rem; border: 1px solid var(--border-color);">Parameterization & Decoupling</td>
-                <td style="padding: 0.6rem; border: 1px solid var(--border-color);">Replace hardcoded server names, database names, and file paths with M Parameters (<code>p_ServerName</code>, <code>p_FilePath</code>). Define Deployment Rules for Test and Prod.</td>
-              </tr>
-              <tr>
-                <td style="padding: 0.6rem; border: 1px solid var(--border-color); font-weight: bold; color: var(--accent-amber);">Gate 2</td>
-                <td style="padding: 0.6rem; border: 1px solid var(--border-color);">Technical Debt & Optimization</td>
-                <td style="padding: 0.6rem; border: 1px solid var(--border-color);">1. Run Tabular Editor BPA.<br>2. Format all DAX measures with VAR/RETURN.<br>3. Hide all foreign keys.<br>4. Remove unused tables/columns.<br>5. Set proper data types and summarization behaviors.</td>
-              </tr>
-              <tr>
-                <td style="padding: 0.6rem; border: 1px solid var(--border-color); font-weight: bold; color: var(--accent-emerald);">Gate 3</td>
-                <td style="padding: 0.6rem; border: 1px solid var(--border-color);">Git Integration & PR Review</td>
-                <td style="padding: 0.6rem; border: 1px solid var(--border-color);">Save report as <code>.pbip</code> (TMDL). Commit to a new Git feature branch (<code>feature/graduated-prototype</code>). Open a Pull Request for code review by the Senior BI Architect.</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <strong style="color: var(--accent-emerald);">Real-World Example:</strong>
-          <p style="margin-top: 0.35rem; color: #94a3b8; font-style: italic;">
-            A Marketing Analyst builds a Customer Churn dashboard from a local CSV (<code>C:\Users\Analyst\Desktop\churn.csv</code>) in a Sandbox workspace. To scale it to 500 sales reps, the BI team moves the CSV data to Azure SQL / OneLake, replaces the desktop path with <code>p_ServerName</code> and <code>p_DatabaseName</code> parameters, runs Tabular Editor BPA to eliminate 12 unused columns and optimize DAX, converts to <code>.pbip</code>, and merges into <code>Enterprise_Dev</code> via GitHub PR. It is then promoted through <code>Test</code> to <code>Prod</code> with automated daily refresh and RLS.
-          </p>
-        </div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Self-hosted agent, YAML CI (Tabular Editor BPA), YAML CD (Fabric REST Deploy API), Lab L19.</p>
       </div>
 
-      <!-- REV-10: Target Stage Zero-Row Cache & Mandatory Configurations -->
-      <div class="card" style="border-left: 4px solid var(--accent-purple); margin-bottom: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span class="code-pill" style="color: var(--accent-purple); border-color: rgba(168, 85, 247, 0.3);">GAP-07 / REV-10 • Phase 19</span>
-            <strong style="font-size: 1rem; color: var(--text-primary);">Deployment Moves the Model; Refresh Loads the Data</strong>
-          </div>
-          <span class="phase-badge badge-completed" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">Remediated & Mastered ✓</span>
+      <div class="phase-card">
+        <div class="phase-header">
+          <span class="phase-title">Phase 9 — Monitoring, Performance, The Gauntlet & Capstone</span>
+          <span class="status-tag status-locked">🔒 Locked (10h)</span>
         </div>
-        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
-          <strong>Core Rule:</strong> In Power BI Deployment Pipelines + Import Mode + Gateway architectures, promoting a model copies schema/metadata <em>only</em>. The target workspace has <strong>0 cached rows</strong> until its first post-deployment refresh.
-        </p>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Performance Analyzer + DAX Studio server timings, 8–10 symptom-only Gauntlet labs, final capstone presentation.</p>
+      </div>
+    </div>
 
-        <pre style="background: #0f172a; padding: 1rem; border-radius: 6px; margin: 0.75rem 0; font-family: monospace; font-size: 0.82rem; color: #38bdf8; overflow-x: auto;">
-DEV
-Model definition
-+ 605 cached rows
-       |
-       | Deploy (Pipeline transfers schema ONLY)
-       v
-TEST
-Model definition
-+ 0 cached rows initially (Visuals blank/error)
-       |
-       | Refresh (Gateway / Cloud OAuth2)
-       v
-TEST
-Model definition
-+ 600 rows from Test source</pre>
+    <!-- TAB 3: KNOWLEDGE & SCORES -->
+    <div id="tab-knowledge" class="tab-pane">
+      <h2 class="section-title">📚 Concepts Learned (CL-01 – CL-17)</h2>
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Concept</th>
+            <th>Details</th>
+            <th>Phase</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>CL-01</strong></td>
+            <td>Why DEV uses smaller data (250K/6mo) vs TEST/PROD (2.5M/36mo)</td>
+            <td>Three reasons: (1) DEV = fast iteration for model building, (2) TEST must simulate production-realistic load to catch performance issues, (3) 36 months needed for meaningful incremental refresh partition testing in Phase 5</td>
+            <td>P0</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>CL-02</strong></td>
+            <td>SharePoint/OneDrive Cloud URL Best Practice (Stripping ?web=1)</td>
+            <td>When connecting Power BI to SharePoint/OneDrive Excel files via Web.Contents(), copying the browser path includes '?web=1' which renders an HTML viewer. Stripping '?web=1' accesses the raw binary stream directly, preventing scheduled refresh failures in Power BI Service.</td>
+            <td>P0</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>CL-03</strong></td>
+            <td>Schema Drift & Column Renaming Downstream Impact (Lab L10)</td>
+            <td>Renaming a column in the database breaks Power Query mashup evaluation at the Select/Rename Columns step with 'Column not found'. This fails scheduled refresh and cascades into broken DAX measures and blank visuals.</td>
+            <td>P0</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>CL-04</strong></td>
+            <td>Hybrid Refresh Orchestration & Formula.Firewall Privacy Levels</td>
+            <td>In mixed-source models, Power BI Service coordinates On-premises Gateway (for PostgreSQL) and direct cloud OAuth2 (for OneDrive). The mashup engine combines streams in the cloud. Privacy levels must be aligned to prevent Formula.Firewall data boundary errors.</td>
+            <td>P0</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>CL-05</strong></td>
+            <td>Power BI Project (.PBIP) & TMDL Architecture for Enterprise Version Control</td>
+            <td>PBIP splits reports (.pbir / json) and semantic models (.tmdl) into plain text files. TMDL replaces single massive model.bim with individual human-readable files (expressions.tmdl, table.tmdl, relationships.tmdl), enabling clean Git branching, PR line-by-line diffs, and merge conflict resolution without corrupting binary PBIX files.</td>
+            <td>P1</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>CL-06</strong></td>
+            <td>Query Folding Mechanics with Date vs DateTime RangeStart/RangeEnd</td>
+            <td>Power BI Incremental Refresh requires RangeStart/RangeEnd to be DateTime type. When filtering Date columns, comparing Date to DateTime throws an M Expression.Error. Converting the date column to DateTime before filtering preserves full Query Folding, pushing the WHERE clause down to the database SQL engine.</td>
+            <td>P1</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>CL-07</strong></td>
+            <td>VertiPaq Internal Date Serialization vs Strict Relational Typing</td>
+            <td>VertiPaq encodes dates as integer/double serial offsets since 1899-12-30. Mismatched relationship types (e.g. Int64 Target_Month to Date Dim_Date) may resolve due to matching serial integers, but trigger Storage Engine type coercion CPU penalties and BPA rule violations. Enforcing strict Date typing on both sides is mandatory for enterprise scale.</td>
+            <td>P1</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>CL-08</strong></td>
+            <td>Direct TMDL Measure Authoring & Developer Velocity in PBIP</td>
+            <td>Because PBIP uses plain-text TMDL format, entire libraries of DAX measures, display folders, format strings, and annotations can be authored, refactored, and script-generated directly in .tmdl files without manual GUI clicking in Desktop, dramatically accelerating development and enabling automated CI/CD code generation.</td>
+            <td>P1</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>CL-09</strong></td>
+            <td>Star Schema VertiPaq Execution Optimization vs Snowflaking</td>
+            <td>VertiPaq optimizes single-hop 1-to-many relationship bitmaps. Star schemas allow Storage Engine (SE) vector scans and direct bitwise filtering, whereas Snowflake schemas force multi-hop joins into the Formula Engine (FE), increasing memory footprint and query latency.</td>
+            <td>P1</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>CL-10</strong></td>
+            <td>Foreign Key Hiding & Self-Service Model Governance</td>
+            <td>Hiding foreign keys and raw fact metrics prevents report creators from accidental high-cardinality fact table slicing, eliminates implicit aggregation errors, and guarantees slicing occurs cleanly through Dimension attributes.</td>
+            <td>P1</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>CL-11</strong></td>
+            <td>Golden Semantic Model vs Thin Report Architecture</td>
+            <td>Enterprise Power BI decouples the central data model ('Golden Dataset') from visualization layers ('Thin Reports'). Thin reports connect via Power BI Service Live Connection without importing data, preventing model duplication, reducing capacity memory consumption, and enforcing a Single Source of Truth (SSOT).</td>
+            <td>P2</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>CL-12</strong></td>
+            <td>Thin Report Binding & Lineage via definition.pbir Connection Strings</td>
+            <td>In PBIP/PBIR format, thin reports maintain zero local data and declare their upstream dataset dependency in definition.pbir using XMLA endpoint connection strings (powerbi://api.powerbi.com/v1.0/myorg/<workspace>;initial catalog=<dataset>). During deployment pipelines or CI/CD promotions, this pointer is rebinding-aware.</td>
+            <td>P2</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>CL-13</strong></td>
+            <td>Dataset Endorsement Governance (Promoted vs Certified)</td>
+            <td>Promoted endorsement is self-service metadata applied by dataset owners to improve discoverability. Certified endorsement requires tenant-level security group authorization managed by Power BI / Fabric Administrators, guaranteeing the model meets enterprise data quality, security, and governance standards.</td>
+            <td>P2</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>CL-14</strong></td>
+            <td>Read vs Build Permissions & Enterprise Thin Reports</td>
+            <td>Read permission allows users to consume reports without accessing the underlying model. Build permission allows users to author new reports, use Analyze in Excel, and connect live via XMLA endpoints without exposing data source credentials.</td>
+            <td>P2</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>CL-15</strong></td>
+            <td>Dataset Takeover & Credential Invalidation Mechanics (Lab L14)</td>
+            <td>When a new owner takes over a dataset in Power BI Service, all stored data source connection credentials and gateway bindings are invalidated for security. The new owner must immediately re-enter database credentials and rebind gateway data sources before scheduled refresh can resume.</td>
+            <td>P2</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>CL-16</strong></td>
+            <td>Gateway ADO.NET SSL Handshake & Timeout Mechanics (AdoNetProviderOpenConnectionTimeoutError)</td>
+            <td>When configuring on-premises database connections in Power BI Gateway, enabling 'Encrypted connection' against local database servers without SSL certificates causes the ADO.NET provider (Npgsql) to hang waiting for a TLS handshake. Disabling encryption ('Not encrypted') allows immediate plain socket connection, eliminating gateway timeout failures.</td>
+            <td>P3</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>CL-17</strong></td>
+            <td>Centralized Gateway Connection Architecture vs Dataset-Bound Credentials</td>
+            <td>In Power BI Enterprise architecture, data source connections in Manage Connections and Gateways exist as central shared objects. Updating database credentials on a shared gateway connection propagates instantly to all mapped semantic models across all workspaces, eliminating individual dataset credential management.</td>
+            <td>P3</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>CL-18</strong></td>
+            <td>VertiPaq Cache Resilience & Stale Data Behavior on Refresh Failure</td>
+            <td>In Import mode, semantic model data resides in the VertiPaq in-memory engine. If a scheduled refresh fails due to gateway offline or credential errors, the existing memory cache is preserved intact. Report consumers continue viewing the last successful snapshot (stale data) rather than blank visuals.</td>
+            <td>P3</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>CL-19</strong></td>
+            <td>Formula.Firewall Data Leak Prevention & Privacy Boundary Isolation</td>
+            <td>Power Query privacy levels (Public, Organizational, Private) prevent confidential data from leaking across untrusted data sources during mashup merging and query folding. Aligning internal data sources to 'Organizational' allows safe cross-source joins in Power BI Service.</td>
+            <td>P3</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>CL-20</strong></td>
+            <td>Dynamic Row-Level Security with Disconnected Security Tables</td>
+            <td>Dynamic RLS uses USERPRINCIPALNAME() and LOOKUPVALUE() on a disconnected security table to evaluate row-level filter predicates at query runtime. This avoids bidirectional relationship ambiguity, preserves single-direction star schema architecture, and prevents cross-filtering side effects across unrelated dimensions.</td>
+            <td>P4</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>CL-21</strong></td>
+            <td>Hierarchical Fallback Evaluation in Dynamic RLS Filters</td>
+            <td>Enterprise RLS filters implement nested IF/OR structures (e.g. ALL -> Region -> Territory) allowing executive users unconstrained access, regional directors aggregate regional scope, and field territory managers strictly localized visibility in a single unified security role.</td>
+            <td>P4</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>CL-22</strong></td>
+            <td>Object-Level Security (OLS) Restrictive Engine Mechanics vs RLS Union Logic</td>
+            <td>While RLS permissions are cumulative (evaluating the union of permitted rows using OR logic across multiple roles), OLS permissions are strictly restrictive. If any assigned role sets an object's permission to 'none', the table/column is completely concealed from metadata and queries, preventing accidental data leaks across combined roles.</td>
+            <td>P4</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>CL-23</strong></td>
+            <td>Hierarchical VertiPaq Partition Compression (Year, Quarter, Month Slices)</td>
+            <td>When applying Incremental Refresh policies, the VertiPaq storage engine automatically compacts older historical partitions into Quarter and Year slices while maintaining granular Monthly slices for the active window. This minimizes partition metadata overhead, optimizes columnar dictionary encoding, and restricts scheduled refresh query execution exclusively to the latest active partition.</td>
+            <td>P5</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>CL-24</strong></td>
+            <td>XMLA Read/Write Endpoint Connectivity & TMSL Schema Inspection</td>
+            <td>Assigning workspaces to Microsoft Fabric / Premium capacity exposes standard Analysis Services XMLA endpoints (powerbi://api.powerbi.com/v1.0/myorg/workspace-name). External management tools (SSMS, DAX Studio, Tabular Editor) connect directly to live cloud models to inspect physical partition schemas (TMSL policyRange definitions) and execute granular partition processing without Power BI Desktop dependency.</td>
+            <td>P5</td>
+            <td>2026-09-06</td>
+          </tr>
+        </tbody>
+      </table>
 
-        <div style="background: rgba(0,0,0,0.3); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;">
-          <strong style="color: var(--accent-blue);">Two Mandatory Configurations in Target Test Stage:</strong>
-          <ul style="margin-top: 0.5rem; padding-left: 1.25rem;">
-            <li><strong>1. Parameter Deployment Rules:</strong> Bind semantic model parameters (<code>p_ServerName</code>, <code>p_DatabaseName</code>, or <code>p_FilePath</code>) to the Test environment data source.</li>
-            <li><strong>2. Post-Deployment Data Refresh & Gateway Credentials:</strong> Trigger a manual or scheduled refresh and ensure Gateway / OAuth2 cloud credentials are authenticated to populate the VertiPaq memory cache.</li>
-          </ul>
+      <h2 class="section-title" style="margin-top: 2rem;">🎯 Technical Questions & Scores (TQ-01 – TQ-19)</h2>
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Question</th>
+            <th>Evaluation</th>
+            <th>Score</th>
+            <th>Category</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>TQ-01</strong></td>
+            <td>Why do we use smaller data volume in DEV but larger in TEST/PROD?</td>
+            <td><span class="status-tag" style="background: rgba(56,189,248,0.15); color: var(--accent-blue);">Partially Correct</span></td>
+            <td><strong>4 / 10</strong></td>
+            <td>Workspace Architecture</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-02</strong></td>
+            <td>Why 3 separate databases instead of 1 shared database with environment flags?</td>
+            <td><span class="status-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">Correct</span></td>
+            <td><strong>9 / 10</strong></td>
+            <td>Workspace Architecture</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-03</strong></td>
+            <td>What is an SPN and why does CI/CD require one instead of user credentials?</td>
+            <td><span class="status-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">Correct</span></td>
+            <td><strong>8 / 10</strong></td>
+            <td>CI/CD</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-04</strong></td>
+            <td>If a PostgreSQL column is renamed in DEV, where does it break downstream and why?</td>
+            <td><span class="status-tag" style="background: rgba(56,189,248,0.15); color: var(--accent-blue);">Technically Correct but Needs Improvement</span></td>
+            <td><strong>7 / 10</strong></td>
+            <td>Troubleshooting</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-05</strong></td>
+            <td>How do hybrid data sources (Postgres + OneDrive) behave during scheduled refresh in Service?</td>
+            <td><span class="status-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">Correct</span></td>
+            <td><strong>8 / 10</strong></td>
+            <td>Refresh</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-06</strong></td>
+            <td>What is Query Folding and why does custom M code often break it?</td>
+            <td><span class="status-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">Correct</span></td>
+            <td><strong>9 / 10</strong></td>
+            <td>Troubleshooting</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-07</strong></td>
+            <td>Why is PBIP (TMDL/JSON) superior to binary PBIX for multi-developer collaboration?</td>
+            <td><span class="status-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">Correct</span></td>
+            <td><strong>10 / 10</strong></td>
+            <td>Git</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-08</strong></td>
+            <td>Why does VertiPaq strongly favor Star Schema over Snowflake / Bidirectional schemas?</td>
+            <td><span class="status-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">Correct</span></td>
+            <td><strong>8.5 / 10</strong></td>
+            <td>Workspace Architecture</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-09</strong></td>
+            <td>Why is it an anti-pattern to leave foreign keys unhidden in report view?</td>
+            <td><span class="status-tag" style="background: rgba(56,189,248,0.15); color: var(--accent-blue);">Technically Correct but Needs Improvement</span></td>
+            <td><strong>7 / 10</strong></td>
+            <td>Workspace Architecture</td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-10</strong></td>
+            <td>What is the difference between Promoted and Certified semantic model endorsements?</td>
+            <td><span class="status-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">Correct</span></td>
+            <td><strong>10 / 10</strong></td>
+            <td>Security</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-11</strong></td>
+            <td>What is the operational difference between Read and Build permissions on a shared semantic model?</td>
+            <td><span class="status-tag" style="background: rgba(56,189,248,0.15); color: var(--accent-blue);">Technically Correct but Needs Improvement</span></td>
+            <td><strong>8.5 / 10</strong></td>
+            <td>Security</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-12</strong></td>
+            <td>Why does taking over a dataset break existing gateway and scheduled refresh bindings?</td>
+            <td><span class="status-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">Correct</span></td>
+            <td><strong>8.5 / 10</strong></td>
+            <td>Troubleshooting</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-13</strong></td>
+            <td>Where are rotated database passwords updated in Power BI Service, and how does it propagate?</td>
+            <td><span class="status-tag" style="background: rgba(56,189,248,0.15); color: var(--accent-blue);">Technically Correct but Needs Improvement</span></td>
+            <td><strong>8.5 / 10</strong></td>
+            <td>Refresh</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-14</strong></td>
+            <td>What is the difference between Standard Mode and Personal Mode gateways in enterprise architecture?</td>
+            <td><span class="status-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">Correct</span></td>
+            <td><strong>8.5 / 10</strong></td>
+            <td>Refresh</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-15</strong></td>
+            <td>What happens to report visuals in Import mode if a scheduled refresh fails due to gateway downtime?</td>
+            <td><span class="status-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">Correct</span></td>
+            <td><strong>10 / 10</strong></td>
+            <td>Troubleshooting</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-16</strong></td>
+            <td>Why does Power Query enforce Privacy Levels (Formula.Firewall) during mixed-source joins?</td>
+            <td><span class="status-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">Correct</span></td>
+            <td><strong>8.5 / 10</strong></td>
+            <td>Security</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-17</strong></td>
+            <td>Why use disconnected lookup tables with DAX rather than bi-directional relationships for Dynamic RLS?</td>
+            <td><span class="status-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">Correct</span></td>
+            <td><strong>10 / 10</strong></td>
+            <td>Security</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-18</strong></td>
+            <td>If a user belongs to both a role with OLS restricting unit_cost and another role that allows read access, what does the Power BI engine do?</td>
+            <td><span class="status-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">Correct</span></td>
+            <td><strong>10 / 10</strong></td>
+            <td>Security</td>
+            <td>2026-09-06</td>
+          </tr>
+          <tr>
+            <td><strong>TQ-19</strong></td>
+            <td>What happens to historical partitions when publishing a model with incremental refresh directly from Desktop?</td>
+            <td><span class="status-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">Correct</span></td>
+            <td><strong>9.5 / 10</strong></td>
+            <td>Deployment Pipelines</td>
+            <td>2026-09-06</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-title" style="margin-top: 2rem;">⚠️ Knowledge Gaps</h2>
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Area</th>
+            <th>Detail</th>
+            <th>Status</th>
+            <th>Identified</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Incremental Refresh Partitioning</strong></td>
+            <td>Did not connect data volume/date range to partition testing requirements. Mastered and verified via XMLA TMSL partition inspection in Phase 5.</td>
+            <td><span class="status-tag" style="background: rgba(34,197,94,0.15); color: var(--accent-green);">Mastered / Verified via XMLA in Phase 5</span></td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>Schema Drift & Column Renaming (Lab L10)</strong></td>
+            <td>Power Query mashup step failure mechanics explained. Will rehearse during Sabotage Lab L10.</td>
+            <td><span class="status-tag" style="background: rgba(56,189,248,0.15); color: var(--accent-blue);">Explained — Scheduled for Lab L10</span></td>
+            <td>2026-09-05</td>
+          </tr>
+          <tr>
+            <td><strong>Formula.Firewall Privacy Levels in Mixed Sources</strong></td>
+            <td>Mashup engine privacy boundary between on-prem gateway and cloud OAuth2 sources explained and mastered in Phase 3.</td>
+            <td><span class="status-tag" style="background: rgba(56,189,248,0.15); color: var(--accent-blue);">Mastered / Resolved in Phase 3</span></td>
+            <td>2026-09-05</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-title" style="margin-top: 2rem;">⏱️ Hours Log</h2>
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Week</th>
+            <th>Hours</th>
+            <th>Phases</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P0</td>
+            <td>Initial setup session</td>
+          </tr>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P0</td>
+            <td>T0.3 PostgreSQL databases + schema DDL</td>
+          </tr>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P0</td>
+            <td>T0.4 Synthetic data generator execution (5.25M total rows seeded)</td>
+          </tr>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P0</td>
+            <td>T0.5 Cloud Excel sources generated and deployed to OneDrive</td>
+          </tr>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P0</td>
+            <td>T0.6 Architecture blueprint authored + Phase 0 Gate Exam passed</td>
+          </tr>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P1</td>
+            <td>T1.1 PBIP + TMDL project initialized with M parameters</td>
+          </tr>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P1</td>
+            <td>T1.2 Ingested 7 queries & verified PostgreSQL Native Query Folding</td>
+          </tr>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P1</td>
+            <td>T1.3 Star Schema model & Dim_Date table built</td>
+          </tr>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P1</td>
+            <td>T1.4 Authored 22 DAX core measures across 4 display folders</td>
+          </tr>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P1</td>
+            <td>T1.5 BPA hardening + Phase 1 Gate Exam passed</td>
+          </tr>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P2</td>
+            <td>T2.1 Trial verified (47d left) + T2.2 BL-Sales-DEV workspace created and published</td>
+          </tr>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P2</td>
+            <td>T2.3 Configured 3 Thin Reports in PBIP/PBIR format bound via live connection</td>
+          </tr>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P2</td>
+            <td>T2.4 Endorsement configured + T2.5 Read/Build & Takeover evaluated + Phase 2 Gate passed</td>
+          </tr>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P3</td>
+            <td>T3.1-T3.3 Gateway configured, SSL handshake timeout diagnosed & resolved, on-demand refresh completed</td>
+          </tr>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P3</td>
+            <td>T3.4 Privacy levels + T3.5 Gateway Gate Exam passed (90/100) + Phase 4 Unlocked</td>
+          </tr>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P4</td>
+            <td>T4.1-T4.5 Dynamic RLS, OLS, Persona Testing, App Published & Phase 4 Gate passed (92/100)</td>
+          </tr>
+          <tr>
+            <td>Week 1</td>
+            <td>0.5h</td>
+            <td>P5</td>
+            <td>T5.1-T5.5 Incremental Refresh configured, initial partition seeding (25s), XMLA SSMS TMSL verified, Gate passed (95/100)</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 0.75rem;">
+        <span style="font-size: 1.1rem; font-weight: 700;">Total Hours:</span>
+        <span style="font-size: 1.1rem; font-weight: 800; color: var(--accent-blue); margin-left: 0.5rem;">8.5h</span>
+        <span style="color: var(--text-muted); margin-left: 0.5rem;">/ estimated 90–100h total</span>
+      </div>
+    </div>
+
+    <!-- TAB 4: SABOTAGE LABS -->
+    <div id="tab-labs" class="tab-pane">
+      <h2 class="section-title">🧪 Sabotage & Troubleshooting Catalog (20 Labs)</h2>
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Lab ID</th>
+            <th>Title & Action</th>
+            <th>Phase</th>
+            <th>User-Visible Symptom</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="labs-table-body">
+          <tr><td><strong>L1</strong></td><td>Postgres Credential Rotation</td><td>P3</td><td>Scheduled refresh fails with credential error; resolved centrally in Manage Connections</td><td><span class="status-tag status-completed">Passed / Demonstrated</span></td></tr>
+          <tr><td><strong>L2</strong></td><td>Gateway Service Stopped</td><td>P3</td><td>Refresh fails "gateway unreachable" (PBIEgwService stopped)</td><td><span class="status-tag status-locked">Pending</span></td></tr>
+          <tr><td><strong>L3</strong></td><td>Gateway Connection Mapping Deleted</td><td>P3</td><td>Dataset cannot bind to connection</td><td><span class="status-tag status-locked">Pending</span></td></tr>
+          <tr><td><strong>L4</strong></td><td>Build Permission Revoked</td><td>P2/P4</td><td>Analyze in Excel / live connection fails</td><td><span class="status-tag status-completed">Passed / Rehearsed</span></td></tr>
+          <tr><td><strong>L5</strong></td><td>App Access Without Underlying Model Access</td><td>P4</td><td>Visuals error "requires semantic model access"</td><td><span class="status-tag status-locked">Pending</span></td></tr>
+          <tr><td><strong>L6</strong></td><td>Tester Added as Workspace Member</td><td>P4</td><td>RLS completely bypassed; sees all company rows</td><td><span class="status-tag status-locked">Pending</span></td></tr>
+          <tr><td><strong>L7</strong></td><td>Relationship Direction Wrong for Security Table</td><td>P4</td><td>RLS returns blank data or unrestricted data</td><td><span class="status-tag status-locked">Pending</span></td></tr>
+          <tr><td><strong>L8</strong></td><td>USERNAME() vs USERPRINCIPALNAME() Confusion</td><td>P4</td><td>Desktop shows DOMAIN\User while Service expects UPN</td><td><span class="status-tag status-locked">Pending</span></td></tr>
+          <tr><td><strong>L9</strong></td><td>Non-Folding Step Before Incremental Filter</td><td>P5</td><td>Incremental refresh fails or takes full table duration</td><td><span class="status-tag status-locked">Pending</span></td></tr>
+          <tr><td><strong>L10</strong></td><td>Postgres Column Renamed</td><td>P3/P5</td><td>Refresh fails with schema mismatch</td><td><span class="status-tag status-locked">Pending</span></td></tr>
+          <tr><td><strong>L11</strong></td><td>Measure Renamed Without Impact Analysis</td><td>P2</td><td>Downstream visuals in 3 thin reports break</td><td><span class="status-tag status-locked">Pending</span></td></tr>
+          <tr><td><strong>L12</strong></td><td>Missing Deployment Rule on TEST Stage</td><td>P6</td><td>TEST model displays DEV data volume (250k rows)</td><td><span class="status-tag status-locked">Pending</span></td></tr>
+          <tr><td><strong>L13</strong></td><td>App Not Updated After PROD Deployment</td><td>P6</td><td>Workspace has new visuals, App consumers see stale version</td><td><span class="status-tag status-locked">Pending</span></td></tr>
+          <tr><td><strong>L14</strong></td><td>Dataset Takeover by Second Account</td><td>P2/P3</td><td>Gateway binding and credentials dropped; re-authentication verified</td><td><span class="status-tag status-completed">Passed / Rehearsed</span></td></tr>
+          <tr><td><strong>L15</strong></td><td>Suboptimal DAX Measure Bottleneck</td><td>P9</td><td>Report page load takes 15+ seconds (FE saturation)</td><td><span class="status-tag status-locked">Pending</span></td></tr>
+          <tr><td><strong>L16</strong></td><td>SharePoint Source File Renamed</td><td>P3</td><td>Mixed-source refresh fails on cloud path only</td><td><span class="status-tag status-locked">Pending</span></td></tr>
+          <tr><td><strong>L17</strong></td><td>Direct Hand-Editing in TEST Workspace</td><td>P6</td><td>Pipeline compare indicates drift; overwritten on deploy</td><td><span class="status-tag status-locked">Pending</span></td></tr>
+          <tr><td><strong>L18</strong></td><td>TMDL Git Merge Conflict</td><td>P7</td><td>PR blocked due to text conflict in table definition</td><td><span class="status-tag status-locked">Pending</span></td></tr>
+          <tr><td><strong>L19</strong></td><td>BPA Violation Submitted in PR</td><td>P8</td><td>CI Azure Pipeline fails build check</td><td><span class="status-tag status-locked">Pending</span></td></tr>
+          <tr><td><strong>L20</strong></td><td>Full PBIX Republish Over Incremental Model</td><td>P5</td><td>All historical partitions wiped; full reload forced</td><td><span class="status-tag status-completed">Passed / Rehearsed (P5)</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TAB 5: 7 LENSES & SCORING -->
+    <div id="tab-lenses" class="tab-pane">
+      <h2 class="section-title">🧠 The Seven Lenses of Architectural Mastery</h2>
+      <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem;">
+        At every phase gate, you will be evaluated across all seven lenses before unlocking the next stage.
+      </p>
+      <div class="lens-grid">
+        <div class="lens-card">
+          <div class="lens-title">1. WHAT</div>
+          <div class="lens-desc">Clear, precise technical definition of the concept or component without jargon fluff.</div>
+        </div>
+        <div class="lens-card">
+          <div class="lens-title">2. WHY</div>
+          <div class="lens-desc">Architectural rationale, enterprise business driver, and the anti-patterns it prevents.</div>
+        </div>
+        <div class="lens-card">
+          <div class="lens-title">3. HOW</div>
+          <div class="lens-desc">Exact mechanical execution, engine behavior, formulas, and step-by-step lifecycle.</div>
+        </div>
+        <div class="lens-card">
+          <div class="lens-title">4. DEPENDENCIES</div>
+          <div class="lens-desc">Upstream/downstream prerequisites (gateway, drivers, capacities, OAuth tokens, parameters).</div>
+        </div>
+        <div class="lens-card">
+          <div class="lens-title">5. PERMISSIONS</div>
+          <div class="lens-desc">Exact security roles (Admin, Member, Contributor, Viewer, Build, SPN, Gateway Admin).</div>
+        </div>
+        <div class="lens-card">
+          <div class="lens-title">6. LIMITATIONS</div>
+          <div class="lens-desc">Boundary conditions, license restrictions, unsupported data types, and scale limits.</div>
+        </div>
+        <div class="lens-card">
+          <div class="lens-title">7. TROUBLESHOOTING</div>
+          <div class="lens-desc">Failure symptoms, diagnostic logs, root cause analysis, and surgical recovery steps.</div>
         </div>
       </div>
-    </section>
+    </div>
   </main>
 
-  <footer>
-    Power BI Deployment Architecture Learning Workspace • Phase Gate System Active • Coach: AI Senior Architect • Implementer: User
-  </footer>
-
   <script>
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-      document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
-      
-      const targetTab = document.getElementById(tabId);
-      if (targetTab) {
-        targetTab.classList.add('active');
-      }
-      
-      const activeBtn = Array.from(document.querySelectorAll('.nav-tab')).find(b => b.getAttribute('onclick').includes(tabId));
-      if (activeBtn) {
-        activeBtn.classList.add('active');
-      }
-    }
-
-    function setTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-      try {
-        localStorage.setItem('pb_tracker_theme', theme);
-      } catch (e) {}
-      
-      const icon = document.getElementById('themeIcon');
-      const text = document.getElementById('themeText');
-      if (theme === 'light') {
-        if (icon) icon.textContent = '☀️';
-        if (text) text.textContent = 'Light Mode';
-      } else {
-        if (icon) icon.textContent = '🌙';
-        if (text) text.textContent = 'Dark Mode';
-      }
-    }
-
     function toggleTheme() {
-      const currentTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-      setTheme(newTheme);
+      const current = document.documentElement.getAttribute('data-theme');
+      const target = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', target);
+      localStorage.setItem('brightline_theme', target);
     }
 
-    // Initialize saved theme on page load (default: dark)
-    let savedTheme = 'dark';
-    try {
-      savedTheme = localStorage.getItem('pb_tracker_theme') || 'dark';
-    } catch (e) {}
-    setTheme(savedTheme);
+    const savedTheme = localStorage.getItem('brightline_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
   </script>
 </body>
 </html>

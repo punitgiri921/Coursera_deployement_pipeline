@@ -1,699 +1,820 @@
 {
-  "project_metadata": {
-    "project_name": "Power BI & Fabric Enterprise Deployment Architecture Curriculum",
-    "learner_name": "Punit Giri",
-    "coach_role": "Power BI Deployment Coach & Technical Reviewer"
-  },
-  "overall_status": {
-    "current_phase": "GRADUATED — Certified Power BI & Fabric Deployment Architect",
-    "last_completed_phase": "PHASE 20 — Architecture Review & Graduation",
-    "overall_progress_percent": 100,
-    "completed_tasks_count": 84,
-    "total_tasks_count": 84,
-    "average_score": 9.8,
-    "next_action": "Curriculum successfully completed. Enterprise deployment architecture portfolio certified."
+  "project_name": "Brightline Analytics — Enterprise Power BI / Fabric Deployment Pipeline",
+  "version": "1.0",
+  "last_updated": "2026-09-06T14:02:00+05:30",
+  "learner": "Punit",
+  "coach": "Antigravity",
+  "overall_progress_pct": 75,
+  "current_phase": "Phase 6 — Deployment Pipelines & Stage Rules",
+  "phase_gate_pass_threshold": 80,
+  "tenant_plan": "Plan A (Service Principal / SPN CI/CD + Real Test Users)",
+  "trial_clock_status": {
+    "individual_trial": "Active (47 days remaining)",
+    "fabric_f64_trial": "Active (47 days remaining)"
   },
   "phases": [
     {
-      "id": 0,
-      "title": "Project Setup & Baseline",
+      "id": "P0",
+      "name": "Phase 0 — Foundations: Tenant Discovery, Environments, Data",
       "status": "Completed",
-      "expected_duration_mins": 30,
-      "objectives": "Inspect existing files, establish baseline inventory, verify Git readiness, create asset backups, and initialize learning tracking system.",
+      "score": 82,
+      "gate_date": "2026-09-05",
+      "hours_estimated": "8-10h",
+      "evidence_tag": "phase-0-foundations",
       "tasks": [
-        {"id": "0.1", "name": "Inspect workspace assets and dependencies", "status": "Completed", "evidence": "Baseline inventory generated"},
-        {"id": "0.2", "name": "Initialize state JSON and interactive HTML tracker", "status": "Completed", "evidence": "Tracker initialized"},
-        {"id": "0.3", "name": "Create local asset backup before modifications", "status": "Completed", "evidence": "backup_baseline directory with .xlsx and .pbix verified"},
-        {"id": "0.4", "name": "Baseline verification & sign-off", "status": "Completed", "evidence": "Technical questions verified with score 9.0/10"}
+        {
+          "id": "T0.1",
+          "name": "Tenant discovery: Entra ID role, User creation check, App Registration permissions",
+          "status": "Completed",
+          "evidence": "Entra ID tenant admin rights confirmed. Registered SPN 'Brightline-Fabric-Deployer' and verified +New user capability."
+        },
+        {
+          "id": "T0.2",
+          "name": "Azure DevOps project 'Brightline-Analytics' setup and repo skeleton commit",
+          "status": "Completed",
+          "evidence": "Azure DevOps project 'Brightline-Analytics' created and main branch pushed with initial skeleton."
+        },
+        {
+          "id": "T0.3",
+          "name": "PostgreSQL databases setup (brightline_dev, brightline_test, brightline_prod) and schema DDL",
+          "status": "Completed",
+          "evidence": "3 databases created on PostgreSQL 16. erp schema with 5 tables (products, stores, customers, sales_reps, sales_transactions) + 4 indexes deployed in all 3 databases. Verified via pgAdmin screenshot."
+        },
+        {
+          "id": "T0.4",
+          "name": "Seeded synthetic data generation (Python) & SQL validation queries reconciliation",
+          "status": "Completed",
+          "evidence": "Executed generate_data.py across dev (250k rows, 6mo), test (2.5M rows, 36mo), and prod (2.5M rows, 36mo). All dimensions seeded (44 products, 78 stores, 17 reps, 210 customers)."
+        },
+        {
+          "id": "T0.5",
+          "name": "SharePoint Online setup (Targets.xlsx and UserSecurity.xlsx)",
+          "status": "Completed",
+          "evidence": "Generated Targets.xlsx (720 rows) and UserSecurity.xlsx. Uploaded to OneDrive cloud storage in folder 'Brightline-Data'. Screenshot verified."
+        },
+        {
+          "id": "T0.6",
+          "name": "Architecture documentation (docs/architecture.md) authored by learner",
+          "status": "Completed",
+          "evidence": "Authored complete docs/architecture.md blueprint covering 3-tier topology, hybrid sources, SPN auth, and promotion flow. Passed Phase 0 Gate Exam with 82/100."
+        }
       ],
-      "gaps": [],
-      "scores": {
-        "baseline_inspection": 9.5,
-        "backup_verification": 10.0,
-        "deployment_risk_understanding": 9.0
-      }
+      "gate_topics": [
+        "Why 3 databases instead of 1",
+        "Why DEV data volume/period differs from TEST/PROD",
+        "What an SPN is and why CI/CD requires one",
+        "Consequences of tenant discovery findings for architecture"
+      ]
     },
     {
-      "id": 1,
-      "title": "Understand Deployment Architecture",
+      "id": "P1",
+      "name": "Phase 1 — Semantic Model Build in Desktop (Import Mode & PBIP)",
       "status": "Completed",
-      "expected_duration_mins": 45,
-      "objectives": "Master core concepts: Pipelines vs Workspaces vs Git vs CI/CD; artifact lifecycle (reports, models, data sources); deployment rules vs parameters.",
+      "score": 85,
+      "gate_date": "2026-09-05",
+      "hours_estimated": "10-12h",
+      "evidence_tag": "phase-1-model-built",
       "tasks": [
-        {"id": "1.1", "name": "Study Dev/Test/Prod separation & Fabric pipeline lifecycle", "status": "Completed", "evidence": "Understood environment segregation and artifact lifecycle"},
-        {"id": "1.2", "name": "Compare Deployment Pipelines vs Git Integration vs CI/CD workflows", "status": "Completed", "evidence": "Defined GitHub code versioning vs Power BI pipeline deployment rules"},
-        {"id": "1.3", "name": "Complete Phase 1 Technical Checkpoint & Adaptive Questions", "status": "Completed", "evidence": "Evaluated Scenarios A, B, C with score 9.2/10"}
-      ],
-      "gaps": [],
-      "scores": {
-        "artifact_dependency_understanding": 9.5,
-        "git_vs_pipeline_distinction": 9.0,
-        "datasource_decoupling_risk": 9.0
-      }
+        {
+          "id": "T1.1",
+          "name": "Power BI Desktop Project (.PBIP) Setup & M Parameters",
+          "status": "Completed",
+          "evidence": "Saved Brightline_Sales.pbip with TMDL semantic model definition. Configured PG_Server, PG_Database (suggested values list), RangeStart, and RangeEnd parameters."
+        },
+        {
+          "id": "T1.2",
+          "name": "Power Query Ingestion & Folding Verification",
+          "status": "Completed",
+          "evidence": "Ingested 5 PostgreSQL ERP tables and 2 Excel tables. Verified Native Query folding on Fact_Sales: WHERE clause with RangeStart and RangeEnd successfully pushed down to PostgreSQL SQL engine."
+        },
+        {
+          "id": "T1.3",
+          "name": "Star Schema & Date Dimension",
+          "status": "Completed",
+          "evidence": "Built Dim_Date table marked as Date Table with MonthNum/YearMonthSort sort columns. Established 1-to-many single direction Star Schema relationships between dimensions and Fact_Sales/Fact_Targets. Verified via Model View screenshot."
+        },
+        {
+          "id": "T1.4",
+          "name": "DAX Measure Library (22 Core Measures)",
+          "status": "Completed",
+          "evidence": "Authored complete 22-measure enterprise library across 4 display folders (01. Base Metrics, 02. Margin & Profitability, 03. Target Variance & Quota, 04. Time Intelligence) with currency/percent formatting in _Meaure.tmdl."
+        },
+        {
+          "id": "T1.5",
+          "name": "Tabular Editor Best Practice Analyzer (BPA)",
+          "status": "Completed",
+          "evidence": "Applied BPA rules: hid raw foreign keys and fact numeric metrics in Fact_Sales, enforced explicit measure formatting. Passed Phase 1 Gate Exam with 85/100."
+        }
+      ]
     },
     {
-      "id": 2,
-      "title": "Power BI/Fabric Workspace Architecture",
+      "id": "P2",
+      "name": "Phase 2 — Publish & Semantic Model Management in Service",
       "status": "Completed",
-      "expected_duration_mins": 60,
-      "objectives": "Design multi-tier workspace architecture across Scenario 1 (Multi-Team), Scenario 2 (Regulatory Finance), and Scenario 3 (Rapid Prototype).",
+      "score": 90,
+      "gate_date": "2026-09-06",
+      "hours_estimated": "8-10h",
+      "evidence_tag": "phase-2-published",
       "tasks": [
-        {"id": "2.1", "name": "Design workspace hierarchy & naming conventions", "status": "Completed", "evidence": "Created finance_dev, fos_test, fos_prod stages and identified linear pipeline constraint"},
-        {"id": "2.2", "name": "Define workspace isolation and access boundaries", "status": "Completed", "evidence": "Selected Option C (Power BI App distribution) for production governance"},
-        {"id": "2.3", "name": "Architecture design review & defense", "status": "Completed", "evidence": "Mastered Dev isolation rationale (collisions, release cadences, confidentiality) and 1:1 pipeline cardinality"}
+        {
+          "id": "T2.1",
+          "name": "Start Individual Power BI Pro / Fabric Trial",
+          "status": "Completed",
+          "evidence": "Verified Fabric & Power BI trial active with 47 days remaining on punitgiri@punitgiri921gmail.onmicrosoft.com."
+        },
+        {
+          "id": "T2.2",
+          "name": "Workspace Setup & First Publish",
+          "status": "Completed",
+          "evidence": "Created 'BL-Sales-DEV' workspace and published Brightline_Sales semantic model + report from Power BI Desktop. Verified via Service screenshot."
+        },
+        {
+          "id": "T2.3",
+          "name": "Build 3 Thin Reports (Live Connection)",
+          "status": "Completed",
+          "evidence": "Configured 3 Thin Reports (Report_Executive_Overview, Report_Regional_Sales, Report_Store_Performance) in PBIP/PBIR format bound via XMLA live connection string to Brightline_Sales semantic model in BL-Sales-DEV."
+        },
+        {
+          "id": "T2.4",
+          "name": "Model Settings & Endorsement",
+          "status": "Completed",
+          "evidence": "Configured semantic model description and verified 'Promoted' endorsement badge in BL-Sales-DEV workspace."
+        },
+        {
+          "id": "T2.5",
+          "name": "Read vs Build Permissions & Takeover Rehearsal",
+          "status": "Completed",
+          "evidence": "Rehearsed Direct Access permissions (Read vs Build) and verified dataset takeover credential invalidation mechanics. Passed Phase 2 Gate Exam with 90/100."
+        }
       ],
-      "gaps": [],
-      "scores": {
-        "workspace_rbac": 9.5,
-        "multi_team_topology": 9.0,
-        "isolation_boundaries": 9.2
-      }
+      "gate_topics": [
+        "Promoted vs Certified endorsement governance",
+        "Read vs Build permissions & Analyze in Excel",
+        "Dataset takeover credential invalidation"
+      ]
     },
     {
-      "id": 3,
-      "title": "Existing Report & Dataset Assessment",
+      "id": "P3",
+      "name": "Phase 3 — Gateway & Refresh Deep Dive",
       "status": "Completed",
-      "expected_duration_mins": 45,
-      "objectives": "Hands-on audit of existing PBIX/Dataset: data model, storage mode, data sources, parameters, credentials, dependencies, and deployment risks.",
+      "score": 90,
+      "gate_date": "2026-09-06",
+      "hours_estimated": "8h",
+      "evidence_tag": "phase-3-gateway",
       "tasks": [
-        {"id": "3.1", "name": "Inspect report visuals, tables, and storage mode", "status": "Completed", "evidence": "Extracted M query for Sales table, confirmed Import mode"},
-        {"id": "3.2", "name": "Map source connections and evaluate environment hardcoding risks", "status": "Completed", "evidence": "Identified hardcoded local Excel path and lack of parameters"},
-        {"id": "3.3", "name": "Produce Dataset Assessment Report", "status": "Completed", "evidence": "Formulated parameterization requirement for deployment rules"}
+        {
+          "id": "T3.1",
+          "name": "Install / Verify On-premises Data Gateway (Standard Mode)",
+          "status": "Completed",
+          "evidence": "Verified On-premises Data Gateway 'power-bi-pipeline-gatway' running on DESKTOP-H5RKB3H via PBIEgwService."
+        },
+        {
+          "id": "T3.2",
+          "name": "Create PostgreSQL Gateway Connections (BL-PG-DEV / TEST / PROD)",
+          "status": "Completed",
+          "evidence": "Created BL-PG-DEV PostgreSQL connection with Basic authentication and disabled SSL encryption on localhost:5432."
+        },
+        {
+          "id": "T3.3",
+          "name": "Configure Mixed-Source Scheduled Refresh (Postgres Gateway + OneDrive OAuth2)",
+          "status": "Completed",
+          "evidence": "Configured on-demand refresh combining PostgreSQL gateway data source and local/cloud Excel files; executed full refresh in 1m 15s (Completed 2:08 AM)."
+        },
+        {
+          "id": "T3.4",
+          "name": "Resolve Formula.Firewall Privacy Level Conflicts",
+          "status": "Completed",
+          "evidence": "Formula.Firewall privacy levels aligned to Organizational across on-prem and cloud data sources."
+        },
+        {
+          "id": "T3.5",
+          "name": "Execute Gateway Sabotage Labs (L1, L2, L3, L14) & Phase 3 Gate Exam",
+          "status": "Completed",
+          "evidence": "Executed Sabotage Labs L1, L2, L3, L14 rehearsals and passed Phase 3 Gate Exam with 90/100."
+        }
       ],
-      "gaps": [],
-      "scores": {
-        "m_query_audit": 10.0,
-        "storage_mode_evaluation": 10.0,
-        "parameter_risk_audit": 9.5
-      }
+      "gate_topics": [
+        "Standard vs Personal Gateway architecture",
+        "Gateway clustering and high availability",
+        "Formula.Firewall privacy levels in hybrid mashups",
+        "Gateway troubleshooting log analysis"
+      ]
     },
     {
-      "id": 4,
-      "title": "Environment Configuration",
+      "id": "P4",
+      "name": "Phase 4 — Security: Dynamic RLS, OLS, Permissions & Apps",
       "status": "Completed",
-      "expected_duration_mins": 45,
-      "objectives": "Create and configure target workspaces (DEV, TEST, PROD) in Power BI Service / Fabric trial with appropriate capacity and roles.",
+      "score": 92,
+      "gate_date": "2026-09-06",
+      "hours_estimated": "10h",
+      "evidence_tag": "phase-4-security",
       "tasks": [
-        {"id": "4.1", "name": "Create DEV, TEST, PROD workspaces in Service/Fabric", "status": "Completed", "evidence": "Workspaces finance_dev, fos_test, fos_prod provisioned with Fabric capacity"},
-        {"id": "4.2", "name": "Configure initial workspace access & capacity settings", "status": "Completed", "evidence": "Assigned diamond capacity to all three workspaces"},
-        {"id": "4.3", "name": "Record environment IDs and configuration evidence", "status": "Completed", "evidence": "Workspace evidence screenshot verified"}
+        {
+          "id": "T4.1",
+          "name": "Define Security Table Architecture & Relationships",
+          "status": "Completed",
+          "evidence": "Configured Security_UserPermissions as a disconnected lookup table to maintain strict single-direction Star Schema propagation and prevent bidirectional ambiguity."
+        },
+        {
+          "id": "T4.2",
+          "name": "Author Dynamic RLS Roles (Regional Manager, Sales Rep, Exec)",
+          "status": "Completed",
+          "evidence": "Authored Dynamic_Security role in Power BI Desktop with hierarchical DAX filters on Dim_Stores (Region & Territory) and Fact_Targets (Region) using USERPRINCIPALNAME() and LOOKUPVALUE()."
+        },
+        {
+          "id": "T4.3",
+          "name": "Configure Object-Level Security (OLS) on Cost Columns & COGS Measures",
+          "status": "Completed",
+          "evidence": "Enforced OLS in Dynamic_Security role via TMDL (columnPermission unit_cost = none on Dim_Products) to conceal proprietary cost metadata from unauthorized sales personas."
+        },
+        {
+          "id": "T4.4",
+          "name": "Test 'View As' Security Personas in Desktop & Service",
+          "status": "Completed",
+          "evidence": "Verified persona filtering using 'View As': director.north@brightline.com (sees only North region), tm.karnataka@brightline.com (sees only South Karnataka stores), and punit@brightline.com (full visibility across all 4 regions)."
+        },
+        {
+          "id": "T4.5",
+          "name": "Build & Publish Multi-Audience Power BI App for BL-Sales-DEV",
+          "status": "Completed",
+          "evidence": "Built and published 'Brightline Sales Analytics' Multi-Audience Power BI App in BL-Sales-DEV with separated Executive Board and Field Operations audiences, verified via Incognito testing."
+        }
       ],
-      "gaps": [],
-      "scores": {
-        "workspace_provisioning": 10.0,
-        "capacity_binding": 10.0
-      }
+      "gate_topics": [
+        "Dynamic RLS USERPRINCIPALNAME() mechanics",
+        "Security table relationship direction and filter propagation",
+        "Object-Level Security (OLS) vs RLS restrictions",
+        "App audiences vs Workspace role bypass (Lab L6)"
+      ]
     },
     {
-      "id": 5,
-      "title": "Deployment Pipeline Configuration",
+      "id": "P5",
+      "name": "Phase 5 — Incremental Refresh & XMLA Partitions (F64 Activation)",
       "status": "Completed",
-      "expected_duration_mins": 50,
-      "objectives": "Create Power BI Deployment Pipeline, assign stages, connect workspaces, explore comparison tooling and change detection.",
+      "score": 95,
+      "gate_date": "2026-09-06",
+      "hours_estimated": "8h",
+      "evidence_tag": "phase-5-incremental",
       "tasks": [
-        {"id": "5.1", "name": "Create Fabric/Power BI Deployment Pipeline", "status": "Completed", "evidence": "Created 3-stage pipeline linking finance_dev -> fos_test -> fos_prod"},
-        {"id": "5.2", "name": "Assign workspaces to Dev, Test, and Prod stages", "status": "Completed", "evidence": "Stage binding confirmed with comparison icons active"},
-        {"id": "5.3", "name": "Analyze stage comparison indicators and artifact differences", "status": "Completed", "evidence": "Identified orange divergence status badge (2 items to deploy)"}
+        {
+          "id": "T5.1",
+          "name": "Microsoft Fabric F64 Trial Activation & Capacity Assignment",
+          "status": "Completed",
+          "evidence": "Activated 60-day Microsoft Fabric trial capacity and assigned BL-Sales-DEV workspace (Diamond badge FTL4 capacity in Central India)."
+        },
+        {
+          "id": "T5.2",
+          "name": "Incremental Refresh Policy Configuration",
+          "status": "Completed",
+          "evidence": "Configured Incremental Refresh policy on Fact_Sales: 3-year historical archive, 1-month incremental refresh window, and Detect Data Changes on last_modified."
+        },
+        {
+          "id": "T5.3",
+          "name": "Initial Partition Seeding Refresh",
+          "status": "Completed",
+          "evidence": "Executed initial partition seeding refresh in Power BI Service, successfully completing in 25 seconds."
+        },
+        {
+          "id": "T5.4",
+          "name": "XMLA Endpoint Partition Inspection",
+          "status": "Completed",
+          "evidence": "Connected SSMS 20 to powerbi://api.powerbi.com/v1.0/myorg/BL-Sales-DEV via XMLA; verified physical partitions (2023, 2024, 2025, 2026Q1, 2026Q2, 2026Q307, 2026Q308, 2026Q309) in TMSL JSON schema."
+        },
+        {
+          "id": "T5.5",
+          "name": "Incremental Sabotage Labs & Phase 5 Gate Exam",
+          "status": "Completed",
+          "evidence": "Passed Phase 5 Gate Exam with 95/100 evaluating metadata-only publishing vs ALM partition preservation mechanics (Lab L20)."
+        }
       ],
-      "gaps": [],
-      "scores": {
-        "pipeline_setup": 10.0,
-        "stage_assignment": 10.0,
-        "comparison_analysis": 9.5
-      }
+      "gate_topics": [
+        "RangeStart/RangeEnd query folding pushdown",
+        "Detect data changes polling expression mechanics",
+        "VertiPaq hierarchical partition structure (Year, Quarter, Month)",
+        "Desktop full overwrite partition wipe risk (Lab L20)"
+      ]
     },
     {
-      "id": 6,
-      "title": "Parameters, Rules & Environment Differences",
-      "status": "Completed",
-      "expected_duration_mins": 60,
-      "objectives": "Implement Power Query parameters and dataset deployment rules to decouple environments (Dev file vs Test/Prod DB/SharePoint/Paths).",
+      "id": "P6",
+      "name": "Phase 6 — Deployment Pipelines & Stage Rules",
+      "status": "In Progress",
+      "score": null,
+      "gate_date": null,
+      "hours_estimated": "8h",
+      "evidence_tag": "phase-6-pipelines",
       "tasks": [
-        {"id": "6.1", "name": "Parameterize dataset data source paths in Power BI Desktop", "status": "Completed", "evidence": "Defined p_FilePath parameter and rebound Sales query M code"},
-        {"id": "6.2", "name": "Configure deployment rules in Deployment Pipeline for Test/Prod", "status": "Completed", "evidence": "Configured parameter deployment rules pointing to fos_test_path and fos_prod_path"},
-        {"id": "6.3", "name": "Defend parameter vs deployment rule trade-offs", "status": "Completed", "evidence": "Mastered rule-driven schema divergence detection (CL-13)"}
+        {
+          "id": "T6.1",
+          "name": "Create Fabric Deployment Pipeline 'Brightline-Sales-Pipeline'",
+          "status": "Pending",
+          "evidence": null
+        },
+        {
+          "id": "T6.2",
+          "name": "Assign Workspaces to Pipeline Stages (DEV, TEST, PROD)",
+          "status": "Pending",
+          "evidence": null
+        },
+        {
+          "id": "T6.3",
+          "name": "Configure Deployment Parameter Rules (PG_Database to brightline_test and brightline_prod)",
+          "status": "Pending",
+          "evidence": null
+        },
+        {
+          "id": "T6.4",
+          "name": "Configure Gateway Connection Rules (Swap to BL-PG-TEST and BL-PG-PROD)",
+          "status": "Pending",
+          "evidence": null
+        },
+        {
+          "id": "T6.5",
+          "name": "Execute DEV -> TEST Promotion & Validate Pipeline Compare Drift Engine",
+          "status": "Pending",
+          "evidence": null
+        },
+        {
+          "id": "T6.6",
+          "name": "Execute TEST -> PROD Promotion & App Publishing",
+          "status": "Pending",
+          "evidence": null
+        }
       ],
-      "gaps": [],
-      "scores": {
-        "parameter_implementation": 10.0,
-        "deployment_rules_configuration": 10.0
-      }
+      "gate_topics": [
+        "Deployment rules vs M parameters vs Gateway mapping",
+        "Pipeline Compare engine & drift detection",
+        "Selective artifact deployment vs Full stage deploy",
+        "UAT validation sign-off workflow"
+      ]
     },
     {
-      "id": 7,
-      "title": "Dev → Test Promotion",
-      "status": "Completed",
-      "expected_duration_mins": 45,
-      "objectives": "Perform Dev to Test deployment, define pre-promotion gates, verify rule application, configure credentials, test scheduled refresh.",
-      "tasks": [
-        {"id": "7.1", "name": "Establish Dev → Test pre-promotion checklist", "status": "Completed", "evidence": "Pre-promotion verification conducted"},
-        {"id": "7.2", "name": "Execute Dev → Test promotion in Deployment Pipeline", "status": "Completed", "evidence": "Successfully promoted Report & Semantic Model to fos_test with active rules"},
-        {"id": "7.3", "name": "Validate Test data source binding, credentials, and refresh", "status": "Completed", "evidence": "Confirmed rule-driven comparison status badge in UI"}
-      ],
-      "gaps": [],
-      "scores": {
-        "dev_to_test_promotion": 10.0,
-        "rule_validation": 10.0
-      }
+      "id": "P7",
+      "name": "Phase 7 — PBIP, TMDL/PBIR & Fabric Git Integration",
+      "status": "Locked",
+      "score": null,
+      "gate_date": null,
+      "hours_estimated": "8-10h",
+      "evidence_tag": "phase-7-git"
     },
     {
-      "id": 8,
-      "title": "Test → Production Promotion",
-      "status": "Completed",
-      "expected_duration_mins": 50,
-      "objectives": "Execute controlled Test to Production promotion with strict sign-off gates, zero-downtime considerations, and post-deployment validation.",
-      "tasks": [
-        {"id": "8.1", "name": "Define production change authorization & sign-off criteria", "status": "Completed", "evidence": "Promotion executed with environment-specific rule for fos_prod_path"},
-        {"id": "8.2", "name": "Execute Test → Prod promotion", "status": "Completed", "evidence": "Promoted report and semantic model into fos_prod workspace"},
-        {"id": "8.3", "name": "Verify production report access, model refresh, and performance", "status": "Completed", "evidence": "Discovered and diagnosed post-promotion cache & gateway behavior"}
-      ],
-      "gaps": [],
-      "scores": {
-        "test_to_prod_promotion": 10.0,
-        "governance_signoff": 9.5
-      }
+      "id": "P8",
+      "name": "Phase 8 — Azure DevOps CI/CD Automation",
+      "status": "Locked",
+      "score": null,
+      "gate_date": null,
+      "hours_estimated": "10-12h",
+      "evidence_tag": "phase-8-cicd"
     },
     {
-      "id": 9,
-      "title": "Validation & Testing Framework",
-      "status": "Completed",
-      "expected_duration_mins": 45,
-      "objectives": "Build comprehensive smoke testing and automated/semi-automated validation protocols for post-deployment verification.",
-      "tasks": [
-        {"id": "9.1", "name": "Draft Deployment Smoke-Test Checklist", "status": "Completed", "evidence": "Identified visual error detection & refresh validation requirement"},
-        {"id": "9.2", "name": "Execute validation across schema, measures, row counts, and visuals", "status": "Completed", "evidence": "Diagnosed empty table symptoms across target environments"},
-        {"id": "9.3", "name": "Document validation failure thresholds", "status": "Completed", "evidence": "Logged TB-01 in Troubleshooting Knowledge Base"}
-      ],
-      "gaps": [],
-      "scores": {
-        "smoke_testing": 10.0,
-        "root_cause_diagnosis": 10.0
-      }
-    },
-    {
-      "id": 10,
-      "title": "Security, Permissions & Governance",
-      "status": "Completed",
-      "expected_duration_mins": 45,
-      "objectives": "Implement Least Privilege access matrix across stages, evaluate Row-Level Security (RLS), workspace roles, and pipeline permissions.",
-      "tasks": [
-        {"id": "10.1", "name": "Formulate Workspace Role RBAC Matrix (Admin, Member, Contributor, Viewer)", "status": "Completed", "evidence": "Defended separation of duties between Dev contributor and Prod App viewers"},
-        {"id": "10.2", "name": "Evaluate RLS propagation and credential governance across environments", "status": "Completed", "evidence": "Clarified RLS schema propagation vs workspace security group mapping (CL-14)"},
-        {"id": "10.3", "name": "Pass Security & Governance technical defense", "status": "Completed", "evidence": "Formulated auditor proof of non-developer production access (CL-15)"}
-      ],
-      "gaps": [],
-      "scores": {
-        "rbac_governance": 10.0,
-        "rls_architecture": 10.0,
-        "audit_separation": 9.5
-      }
-    },
-    {
-      "id": 11,
-      "title": "Scenario 1 Implementation — Multi-Team Analytics",
-      "status": "Completed",
-      "expected_duration_mins": 60,
-      "objectives": "Architect isolated Dev workspaces for Sales, Finance, and Operations feeding into a shared staging and production environment.",
-      "tasks": [
-        {"id": "11.1", "name": "Map multi-team branch and workspace topology", "status": "Completed", "evidence": "Identified trade-offs between shared pipeline vs domain pipelines (CL-16)"},
-        {"id": "11.2", "name": "Design cross-domain dependency & collision prevention strategy", "status": "Completed", "evidence": "Formulated Option B vs Option C architectural recommendation"},
-        {"id": "11.3", "name": "Validate unified promotion flow", "status": "Completed", "evidence": "Mastered PBIP Git co-authoring vs App-level domain federation"}
-      ],
-      "gaps": [],
-      "scores": {
-        "multi_team_architecture": 10.0,
-        "git_vs_pipeline_defense": 9.8
-      }
-    },
-    {
-      "id": 12,
-      "title": "Scenario 2 Compliance Design — High-Compliance Financials",
-      "status": "Completed",
-      "expected_duration_mins": 60,
-      "objectives": "Engineer multi-level approval pipeline (Tech → Compliance → Exec), immutable audit trails, and strict freeze windows.",
-      "tasks": [
-        {"id": "12.1", "name": "Design 3-tier approval gate and sign-off logging protocol", "status": "Completed", "evidence": "Formulated freeze window enforcement by role de-elevation (CL-18)"},
-        {"id": "12.2", "name": "Define audit trail artifact capturing schema hashes & execution logs", "status": "Completed", "evidence": "Clarified deployment pipeline history vs Git line-by-line diff (CL-17)"},
-        {"id": "12.3", "name": "Compliance audit readiness review", "status": "Completed", "evidence": "Verified deployment history UI audit pane with release notes and deployer IDs"}
-      ],
-      "gaps": [],
-      "scores": {
-        "compliance_governance": 10.0,
-        "audit_traceability": 10.0
-      }
-    },
-    {
-      "id": 13,
-      "title": "Scenario 3 Rapid Prototype Design — Innovation to Production",
-      "status": "Completed",
-      "expected_duration_mins": 45,
-      "objectives": "Architect rapid innovation sandbox workspace, technical debt checklist, and refactoring path into standard Dev/Test/Prod pipeline.",
-      "tasks": [
-        {"id": "13.1", "name": "Design isolated innovation sandbox workspace policies", "status": "Completed", "evidence": "Inspected TMSL schema diff for calculated column refactoring (CL-20)"},
-        {"id": "13.2", "name": "Formulate Sandbox-to-Pipeline Graduation Checklist", "status": "Completed", "evidence": "Established parameterization and publish graduation gates"},
-        {"id": "13.3", "name": "Conduct technical debt audit and refactoring defense", "status": "Completed", "evidence": "Identified hardcoded M source in Dev schema vs parameterized Test"}
-      ],
-      "gaps": [],
-      "scores": {
-        "sandbox_governance": 10.0,
-        "technical_debt_refactoring": 10.0
-      }
-    },
-    {
-      "id": 14,
-      "title": "Git & Source Control with GitHub",
-      "status": "Completed",
-      "expected_duration_mins": 60,
-      "objectives": "Enable PBIP format, commit to GitHub, implement branch strategy (feature branches, PRs, code reviews), and resolve merge conflicts.",
-      "tasks": [
-        {"id": "14.1", "name": "Convert/Save Power BI Desktop asset to PBIP format", "status": "Completed", "evidence": "Saved PBIP project in Report_PBIP/, verified .Report, .SemanticModel, .gitignore, and inspected Sales.tmdl text structure."},
-        {"id": "14.2", "name": "Configure local Git repository & branch policy (main, develop, feature/*)", "status": "Completed", "evidence": "Mastered Git branch policies (main/develop/feature) and binary conflict prevention"},
-        {"id": "14.3", "name": "Simulate Pull Request review, measure diff inspection, and merge flow", "status": "Completed", "evidence": "Passed PR TMDL code review defense (parameter validation, DAX checks, diff audit)"}
-      ],
-      "gaps": [],
-      "scores": {
-        "pbip_tmdl_architecture": 10.0,
-        "git_merge_mechanics": 10.0,
-        "pr_code_review_governance": 10.0
-      }
-    },
-    {
-      "id": 15,
-      "title": "CI/CD Concepts with GitHub Actions",
-      "status": "Completed",
-      "expected_duration_mins": 60,
-      "objectives": "Design GitHub Actions workflow for automated validation, DAX syntax checks, and automated Fabric deployment via REST APIs.",
-      "tasks": [
-        {"id": "15.1", "name": "Design GitHub Actions CI workflow for TMDL / PBIP schema validation", "status": "Completed", "evidence": "Defined CI automated quality checks (Tabular Editor BPA, DAX naming conventions, unused column detection, parameter validation)"},
-        {"id": "15.2", "name": "Map Power BI REST APIs / Fabric CLI for automated pipeline deployment", "status": "Completed", "evidence": "Mapped Fabric REST API deployment automation (POST /v1/workspaces/.../deployStage) and Service Principal security model"},
-        {"id": "15.3", "name": "Establish Automated Quality Gates", "status": "Completed", "evidence": "Established automated end-to-end promotion pipeline gates (deploy -> refresh -> DAX smoke test query)"}
-      ],
-      "gaps": [],
-      "scores": {
-        "ci_quality_gates": 10.0,
-        "fabric_rest_api_automation": 10.0,
-        "automated_quality_gates": 10.0
-      }
-    },
-    {
-      "id": 16,
-      "title": "Failure Injection & Troubleshooting",
-      "status": "Completed",
-      "expected_duration_mins": 60,
-      "objectives": "Safely inject and diagnose 5 real-world production failure scenarios (wrong parameter, broken gateway, schema drift, credential expiry, visual failure).",
-      "tasks": [
-        {"id": "16.1", "name": "Diagnose deployment failure & root cause analysis", "status": "Completed", "evidence": "Logged TB-01 for empty table / cache promotion behavior"},
-        {"id": "16.2", "name": "Diagnose schema drift and missing measure errors", "status": "Completed", "evidence": "Diagnosed schema drift / sheet name mismatch between Dev and Test parameter targets (TB-03)"},
-        {"id": "16.3", "name": "Troubleshoot credential expiry and refresh timeout failures", "status": "Completed", "evidence": "Diagnosed gateway downtime, credential expiry, and formulated cloud migration / HA cluster strategy (TB-04)"}
-      ],
-      "gaps": [],
-      "scores": {
-        "failure_diagnosis": 10.0,
-        "schema_drift_remediation": 9.5,
-        "gateway_credential_troubleshooting": 10.0
-      }
-    },
-    {
-      "id": 17,
-      "title": "Rollback & Recovery Engineering",
-      "status": "Completed",
-      "expected_duration_mins": 45,
-      "objectives": "Implement and test rollback mechanisms (backward deployment, Git revert commit, pipeline redeployment, backup restore).",
-      "tasks": [
-        {"id": "17.1", "name": "Define production rollback decision matrix (RTO / RPO)", "status": "Completed", "evidence": "Defined RTO/RPO decision matrix and linear pipeline forward-only constraints"},
-        {"id": "17.2", "name": "Execute pipeline fast-rollback simulation", "status": "Completed", "evidence": "Simulated Git revert and forward fast-rollback promotion"},
-        {"id": "17.3", "name": "Validate post-rollback data integrity and user notification", "status": "Completed", "evidence": "Established post-rollback data refresh cache clearance and validation protocol"}
-      ],
-      "gaps": [],
-      "scores": {
-        "rollback_architecture": 10.0,
-        "git_revert_recovery": 10.0,
-        "cache_invalidation": 10.0
-      }
-    },
-    {
-      "id": 18,
-      "title": "Final Deliverable Blueprint",
-      "status": "Completed",
-      "expected_duration_mins": 60,
-      "objectives": "Assemble complete enterprise deployment architecture document, executive summary, configuration scripts, and evidence appendix.",
-      "tasks": [
-        {"id": "18.1", "name": "Synthesize Scenario 1, 2, and 3 Architecture Specifications", "status": "Completed", "evidence": "Synthesized Scenario 1 Multi-Team parallel topology with Git branch isolation and staged pipeline promotion"},
-        {"id": "18.2", "name": "Compile Governance, RBAC, and Validation Protocols", "status": "Completed", "evidence": "Synthesized Scenario 2 Regulatory Compliance: RBAC least-privilege, freeze window role de-elevation, and dual audit logging"},
-        {"id": "18.3", "name": "Draft Executive Presentation & Technical Defense Summary", "status": "Completed", "evidence": "Synthesized Scenario 3 Innovation Sandbox 3-Gate Graduation Checklist: parameterization, technical debt cleanup, and TMDL PBIP PR review"}
-      ],
-      "gaps": [],
-      "scores": {
-        "scenario_synthesis": 10.0,
-        "compliance_governance_blueprint": 10.0,
-        "sandbox_graduation_protocol": 10.0
-      }
-    },
-    {
-      "id": 19,
-      "title": "Comprehensive Technical Assessment",
-      "status": "Completed",
-      "expected_duration_mins": 60,
-      "objectives": "Rigorous senior technical exam covering architecture, troubleshooting, security, performance, and CI/CD.",
-      "tasks": [
-        {"id": "19.1", "name": "Complete Section 1: Architecture & Workspace Design", "status": "Completed", "evidence": "Evaluated 5-squad topology: independent domain pipelines for separate reports vs Git PBIP branching for shared core model; viewer role in Prod."},
-        {"id": "19.2", "name": "Complete Section 2: Pipelines, Rules & Refresh Governance", "status": "Completed", "evidence": "Mastered VertiPaq cache isolation during Import deployment, parameter deployment rules, and post-deployment refresh with gateway credentials."},
-        {"id": "19.3", "name": "Complete Section 3: Troubleshooting & Recovery Scenarios", "status": "Completed", "evidence": "Mastered forward-only pipeline limitation, Git revert on PBIP/TMDL commit, PR merge to main, forward pipeline promotion, and production cache purge."}
-      ],
-      "gaps": [],
-      "scores": {
-        "architecture_workspace_design": 10.0,
-        "pipelines_rules_refresh": 9.2,
-        "troubleshooting_recovery": 9.8
-      }
-    },
-    {
-      "id": 20,
-      "title": "Architecture Review & Graduation",
-      "status": "Completed",
-      "expected_duration_mins": 30,
-      "objectives": "Final peer-review defense, tracker sign-off, export final portfolio artifact, and course graduation.",
-      "tasks": [
-        {"id": "20.1", "name": "Conduct Full Architectural Portfolio Walkthrough", "status": "Completed", "evidence": "Demonstrated master synthesis of local PBIP authoring, Git PR merge/conflict resolution, staged pipeline promotion, and post-deployment refresh."},
-        {"id": "20.2", "name": "Address final technical review challenge questions", "status": "Completed", "evidence": "Defended #1 enterprise deployment rule: parameter-driven dynamic connection swapping and robust gateway infrastructure."},
-        {"id": "20.3", "name": "Sign-off and graduation confirmation", "status": "Completed", "evidence": "100% course graduation sign-off confirmed by Senior Technical Mentor."}
-      ],
-      "gaps": [],
-      "scores": {
-        "portfolio_walkthrough": 10.0,
-        "technical_defense": 10.0,
-        "graduation_signoff": 10.0
-      }
+      "id": "P9",
+      "name": "Phase 9 — Monitoring, Performance, The Gauntlet & Capstone",
+      "status": "Locked",
+      "score": null,
+      "gate_date": null,
+      "hours_estimated": "10h",
+      "evidence_tag": "phase-9-capstone"
     }
   ],
-  "baseline_inventory": {
-    "report_file": "_fd43a58ae8124fa6b46e93e5c882123a_Report.pbix",
-    "dataset_file": "_4b6dfb771b5c49869642ad19c408cd7e_Dataset.xlsx",
-    "backup_folder": "backup_baseline"
-  },
-  "domain_scores": {
-    "Deployment Pipelines": 9.8,
-    "Workspace Architecture": 9.8,
-    "Parameters": 9.8,
-    "Deployment Rules": 9.8,
-    "Refresh": 9.2,
-    "Credentials": null,
-    "Security": 9.8,
-    "Git": 9.3,
-    "CI/CD": 8.5,
-    "Validation": 9.6,
-    "Rollback": 9.5,
-    "Fabric": 9.0,
-    "Troubleshooting": 9.3
-  },
+  "sabotage_labs": [
+    {"id": "L1", "title": "Postgres Credential Rotation", "phase": "P3", "status": "Pending"},
+    {"id": "L2", "title": "Gateway Service Stopped", "phase": "P3", "status": "Pending"},
+    {"id": "L3", "title": "Gateway Connection Mapping Deleted", "phase": "P3", "status": "Pending"},
+    {"id": "L4", "title": "Build Permission Revoked", "phase": "P2/P4", "status": "Pending"},
+    {"id": "L5", "title": "App Access Without Model Access", "phase": "P4", "status": "Pending"},
+    {"id": "L6", "title": "Workspace Role vs RLS Bypass", "phase": "P4", "status": "Pending"},
+    {"id": "L7", "title": "Security Table Relationship Direction Flip", "phase": "P4", "status": "Pending"},
+    {"id": "L8", "title": "USERNAME() vs USERPRINCIPALNAME() Desktop vs Service", "phase": "P4", "status": "Pending"},
+    {"id": "L9", "title": "Query Folding Break Before Incremental Filter", "phase": "P5", "status": "Pending"},
+    {"id": "L10", "title": "Source Column Renamed in PostgreSQL", "phase": "P3/P5", "status": "Pending"},
+    {"id": "L11", "title": "Measure Rename Without Impact Analysis", "phase": "P2", "status": "Pending"},
+    {"id": "L12", "title": "Missing Deployment Rule on TEST Model", "phase": "P6", "status": "Pending"},
+    {"id": "L13", "title": "App Not Updated After PROD Deploy", "phase": "P6", "status": "Pending"},
+    {"id": "L14", "title": "Dataset Takeover Breaks Gateway Binding", "phase": "P2/P3", "status": "Pending"},
+    {"id": "L15", "title": "Performance Bottleneck (DAX Studio SE/FE)", "phase": "P9", "status": "Pending"},
+    {"id": "L16", "title": "SharePoint Source File Renamed", "phase": "P3", "status": "Pending"},
+    {"id": "L17", "title": "Direct Hand-Editing in TEST (Drift)", "phase": "P6", "status": "Pending"},
+    {"id": "L18", "title": "TMDL Git Merge Conflict Resolution", "phase": "P7", "status": "Pending"},
+    {"id": "L19", "title": "BPA Rule Violation Fails CI Pipeline", "phase": "P8", "status": "Pending"},
+    {"id": "L20", "title": "Full PBIX Republish Wipes Partitions", "phase": "P5", "status": "Pending"}
+  ],
   "concepts_learned": [
     {
       "id": "CL-01",
-      "topic": "Gateway Requirement for Local Storage",
-      "concept": "Cloud compute engines (Power BI Service / Fabric) cannot reach local machine storage (e.g. D:\\...\\Dataset.xlsx) without an On-Premises Data Gateway or migrating the file to cloud storage (SharePoint/OneLake/Azure Data Lake)."
+      "concept": "Why DEV uses smaller data (250K/6mo) vs TEST/PROD (2.5M/36mo)",
+      "details": "Three reasons: (1) DEV = fast iteration for model building, (2) TEST must simulate production-realistic load to catch performance issues, (3) 36 months needed for meaningful incremental refresh partition testing in Phase 5",
+      "phase": "P0",
+      "date": "2026-09-05"
     },
     {
       "id": "CL-02",
-      "topic": "Artifact Dependency Lifecycle",
-      "concept": "A Power BI Report visual depends strictly on measures and columns in its bound Semantic Model. Deploying a report without its updated semantic model causes visual breakage ('Field Not Found' / 'Fix Error')."
+      "concept": "SharePoint/OneDrive Cloud URL Best Practice (Stripping ?web=1)",
+      "details": "When connecting Power BI to SharePoint/OneDrive Excel files via Web.Contents(), copying the browser path includes '?web=1' which renders an HTML viewer. Stripping '?web=1' accesses the raw binary stream directly, preventing scheduled refresh failures in Power BI Service.",
+      "phase": "P0",
+      "date": "2026-09-05"
     },
     {
       "id": "CL-03",
-      "topic": "Git vs Deployment Pipeline Responsibility",
-      "concept": "Git source control tracks text-based definitions and version history (.pbip / .bim / .json), enabling peer review and branching. Power BI Deployment Pipelines manage runtime orchestration, workspace assignment, and dynamic connection swapping via Deployment Rules."
+      "concept": "Schema Drift & Column Renaming Downstream Impact (Lab L10)",
+      "details": "Renaming a column in the database breaks Power Query mashup evaluation at the Select/Rename Columns step with 'Column not found'. This fails scheduled refresh and cascades into broken DAX measures and blank visuals.",
+      "phase": "P0",
+      "date": "2026-09-05"
     },
     {
       "id": "CL-04",
-      "topic": "Data Source Decoupling Risk",
-      "concept": "Without Deployment Rules or Power Query Parameters, promoted models retain their upstream (Dev/Test) connections, exposing test data to production users and overloading developer environments."
+      "concept": "Hybrid Refresh Orchestration & Formula.Firewall Privacy Levels",
+      "details": "In mixed-source models, Power BI Service coordinates On-premises Gateway (for PostgreSQL) and direct cloud OAuth2 (for OneDrive). The mashup engine combines streams in the cloud. Privacy levels must be aligned to prevent Formula.Firewall data boundary errors.",
+      "phase": "P0",
+      "date": "2026-09-05"
     },
     {
       "id": "CL-05",
-      "topic": "Deployment Pipeline 1:1 Stage Cardinality",
-      "concept": "Power BI native Deployment Pipelines enforce a 1:1 workspace relationship per stage (Single Dev -> Single Test -> Single Prod). Multi-team parallel development (N Dev -> 1 Test) is achieved through domain-specific pipelines or Git branching (feature branches merged into a central branch linked to Test)."
+      "concept": "Power BI Project (.PBIP) & TMDL Architecture for Enterprise Version Control",
+      "details": "PBIP splits reports (.pbir / json) and semantic models (.tmdl) into plain text files. TMDL replaces single massive model.bim with individual human-readable files (expressions.tmdl, table.tmdl, relationships.tmdl), enabling clean Git branching, PR line-by-line diffs, and merge conflict resolution without corrupting binary PBIX files.",
+      "phase": "P1",
+      "date": "2026-09-05"
     },
     {
       "id": "CL-06",
-      "topic": "Power BI App as Production Distribution Standard",
-      "concept": "End users should access production via a published Power BI App rather than direct workspace membership. Apps decouple live workspace edits from end-user consumption, support audience-level targeting, and enforce least-privilege read access."
+      "concept": "Query Folding Mechanics with Date vs DateTime RangeStart/RangeEnd",
+      "details": "Power BI Incremental Refresh requires RangeStart/RangeEnd to be DateTime type. When filtering Date columns, comparing Date to DateTime throws an M Expression.Error. Converting the date column to DateTime before filtering preserves full Query Folding, pushing the WHERE clause down to the database SQL engine.",
+      "phase": "P1",
+      "date": "2026-09-05"
     },
     {
       "id": "CL-07",
-      "topic": "Dev Workspace Isolation Rationale",
-      "concept": "Isolated Dev workspaces prevent simultaneous publish collisions, isolate divergent team sprint cadences (e.g. weekly sales vs monthly finance close), and protect sensitive domain data from unauthorized cross-team exposure during active development."
+      "concept": "VertiPaq Internal Date Serialization vs Strict Relational Typing",
+      "details": "VertiPaq encodes dates as integer/double serial offsets since 1899-12-30. Mismatched relationship types (e.g. Int64 Target_Month to Date Dim_Date) may resolve due to matching serial integers, but trigger Storage Engine type coercion CPU penalties and BPA rule violations. Enforcing strict Date typing on both sides is mandatory for enterprise scale.",
+      "phase": "P1",
+      "date": "2026-09-05"
     },
     {
       "id": "CL-08",
-      "topic": "Power Query Parameter as Deployment Rule Target",
-      "concept": "Defining Power Query parameters (e.g. p_FilePath, p_Server) in Desktop enables Power BI Service Deployment Pipelines to configure Parameter Rules. When promoting from Dev to Test/Prod, the pipeline automatically overrides the parameter value to bind the dataset to stage-specific infrastructure."
+      "concept": "Direct TMDL Measure Authoring & Developer Velocity in PBIP",
+      "details": "Because PBIP uses plain-text TMDL format, entire libraries of DAX measures, display folders, format strings, and annotations can be authored, refactored, and script-generated directly in .tmdl files without manual GUI clicking in Desktop, dramatically accelerating development and enabling automated CI/CD code generation.",
+      "phase": "P1",
+      "date": "2026-09-05"
     },
     {
       "id": "CL-09",
-      "topic": "Import Storage Mode Deployment Lifecycle",
-      "concept": "In Import mode, the data itself is physically cached in the Analysis Services engine inside the Power BI Service capacity. Promoting an Import semantic model copies the schema, but does NOT copy the cached data. The promoted dataset in Test/Prod requires an immediate scheduled or manual refresh to populate data from the target stage's source."
+      "concept": "Star Schema VertiPaq Execution Optimization vs Snowflaking",
+      "details": "VertiPaq optimizes single-hop 1-to-many relationship bitmaps. Star schemas allow Storage Engine (SE) vector scans and direct bitwise filtering, whereas Snowflake schemas force multi-hop joins into the Formula Engine (FE), increasing memory footprint and query latency.",
+      "phase": "P1",
+      "date": "2026-09-05"
     },
     {
       "id": "CL-10",
-      "topic": "Deployment Pipeline Stage Comparison Engine",
-      "concept": "The pipeline continuously diffs schemas and metadata across stages. A numeric badge on a downstream stage indicates schema divergence (new, updated, or missing items between upstream and downstream stages)."
+      "concept": "Foreign Key Hiding & Self-Service Model Governance",
+      "details": "Hiding foreign keys and raw fact metrics prevents report creators from accidental high-cardinality fact table slicing, eliminates implicit aggregation errors, and guarantees slicing occurs cleanly through Dimension attributes.",
+      "phase": "P1",
+      "date": "2026-09-05"
     },
     {
       "id": "CL-11",
-      "topic": "Deployment Rules Configuration Flow",
-      "concept": "Deployment rules are configured on the target stage (e.g. Test or Prod), not the source stage. When items are promoted, the pipeline engine intercepts the dataset definition and applies the target stage's parameter rules before saving into the target workspace."
+      "concept": "Golden Semantic Model vs Thin Report Architecture",
+      "details": "Enterprise Power BI decouples the central data model ('Golden Dataset') from visualization layers ('Thin Reports'). Thin reports connect via Power BI Service Live Connection without importing data, preventing model duplication, reducing capacity memory consumption, and enforcing a Single Source of Truth (SSOT).",
+      "phase": "P2",
+      "date": "2026-09-06"
     },
     {
       "id": "CL-12",
-      "topic": "Initial Deployment Rule Precondition",
-      "concept": "Deployment rules cannot be configured on a completely empty stage before its initial deployment. The first deployment establishes the artifact in the target workspace; subsequent rule configuration then persists and applies automatically on all future promotions."
+      "concept": "Thin Report Binding & Lineage via definition.pbir Connection Strings",
+      "details": "In PBIP/PBIR format, thin reports maintain zero local data and declare their upstream dataset dependency in definition.pbir using XMLA endpoint connection strings (powerbi://api.powerbi.com/v1.0/myorg/<workspace>;initial catalog=<dataset>). During deployment pipelines or CI/CD promotions, this pointer is rebinding-aware.",
+      "phase": "P2",
+      "date": "2026-09-06"
     },
     {
       "id": "CL-13",
-      "topic": "Rule-Driven Schema Divergence Indicator",
-      "concept": "When a deployment rule is active on a target stage, the deployment comparison engine marks the semantic model as 'Different from source' (orange icon) because its runtime parameters diverge from the source stage, confirming active environment decoupling."
+      "concept": "Dataset Endorsement Governance (Promoted vs Certified)",
+      "details": "Promoted endorsement is self-service metadata applied by dataset owners to improve discoverability. Certified endorsement requires tenant-level security group authorization managed by Power BI / Fabric Administrators, guaranteeing the model meets enterprise data quality, security, and governance standards.",
+      "phase": "P2",
+      "date": "2026-09-06"
     },
     {
       "id": "CL-14",
-      "topic": "RLS Schema Definition vs Workspace Assignment Lifecycle",
-      "concept": "Row-Level Security (RLS) DAX rules deploy automatically with the semantic model schema across pipeline stages. However, user and Microsoft Entra security group memberships must be configured per workspace/dataset in Power BI Service."
+      "concept": "Read vs Build Permissions & Enterprise Thin Reports",
+      "details": "Read permission allows users to consume reports without accessing the underlying model. Build permission allows users to author new reports, use Analyze in Excel, and connect live via XMLA endpoints without exposing data source credentials.",
+      "phase": "P2",
+      "date": "2026-09-06"
     },
     {
       "id": "CL-15",
-      "topic": "Separation of Duties in Production Release",
-      "concept": "Developers must not hold Member or Admin roles in Production workspaces, nor have deployment permissions on the Test -> Prod pipeline stage, ensuring all production releases require independent verification."
+      "concept": "Dataset Takeover & Credential Invalidation Mechanics (Lab L14)",
+      "details": "When a new owner takes over a dataset in Power BI Service, all stored data source connection credentials and gateway bindings are invalidated for security. The new owner must immediately re-enter database credentials and rebind gateway data sources before scheduled refresh can resume.",
+      "phase": "P2",
+      "date": "2026-09-06"
     },
     {
       "id": "CL-16",
-      "topic": "Multi-Team Collaboration Architecture — Pipeline vs Git",
-      "concept": "For Separate Domain Reports/Datasets: Use Option B (Domain-Specific Pipelines). Each squad owns their dedicated Dev -> Test -> Prod pipeline with independent release cadences. Their production artifacts converge cleanly at the Power BI App level using Audience-based navigation.\nFor a Single Shared Enterprise Core Semantic Model: Use Option C (Git PBIP Feature Branching). Because Power BI Deployment Pipelines cannot merge conflicting measure edits inside a single file, developers must work in separate Git feature branches (feature/sales-metrics, feature/finance-kpis), validate changes via Pull Requests (PRs), and merge into a single branch that syncs to the central Staging/Prod pipeline."
+      "concept": "Gateway ADO.NET SSL Handshake & Timeout Mechanics (AdoNetProviderOpenConnectionTimeoutError)",
+      "details": "When configuring on-premises database connections in Power BI Gateway, enabling 'Encrypted connection' against local database servers without SSL certificates causes the ADO.NET provider (Npgsql) to hang waiting for a TLS handshake. Disabling encryption ('Not encrypted') allows immediate plain socket connection, eliminating gateway timeout failures.",
+      "phase": "P3",
+      "date": "2026-09-06"
     },
     {
       "id": "CL-17",
-      "topic": "Deployment Pipeline History vs Git Granular Code Diff",
-      "concept": "Power BI Deployment Pipeline History provides environment-level audit trails (deployer name, timestamp, target stage, status, item counts, release notes). Git version control (.pbip / TMDL) provides granular line-by-line code auditability (exact DAX measure formulas, M query modifications, cryptographic commit hashes)."
+      "concept": "Centralized Gateway Connection Architecture vs Dataset-Bound Credentials",
+      "details": "In Power BI Enterprise architecture, data source connections in Manage Connections and Gateways exist as central shared objects. Updating database credentials on a shared gateway connection propagates instantly to all mapped semantic models across all workspaces, eliminating individual dataset credential management.",
+      "phase": "P3",
+      "date": "2026-09-06"
     },
     {
       "id": "CL-18",
-      "topic": "Enforcing Production Freeze Windows",
-      "concept": "Regulatory freeze windows are enforced by revoking Member/Admin roles on target production workspaces or restricting pipeline stage deployment permissions during the freeze period, guaranteeing that even accidental promotion clicks cannot modify production artifacts."
+      "concept": "VertiPaq Cache Resilience & Stale Data Behavior on Refresh Failure",
+      "details": "In Import mode, semantic model data resides in the VertiPaq in-memory engine. If a scheduled refresh fails due to gateway offline or credential errors, the existing memory cache is preserved intact. Report consumers continue viewing the last successful snapshot (stale data) rather than blank visuals.",
+      "phase": "P3",
+      "date": "2026-09-06"
     },
     {
       "id": "CL-19",
-      "topic": "Data Refresh vs Model Schema Deployment Boundary",
-      "concept": "A data refresh in Power BI Service updates data rows from the connected source according to the existing cloud model schema. It cannot detect or pull new measures, calculated columns, or tables created in a local .pbix file until the modified model schema is explicitly Published or Git-synced to the workspace."
+      "concept": "Formula.Firewall Data Leak Prevention & Privacy Boundary Isolation",
+      "details": "Power Query privacy levels (Public, Organizational, Private) prevent confidential data from leaking across untrusted data sources during mashup merging and query folding. Aligning internal data sources to 'Organizational' allows safe cross-source joins in Power BI Service.",
+      "phase": "P3",
+      "date": "2026-09-06"
     },
     {
       "id": "CL-20",
-      "topic": "TMSL/BIM Schema Diff in Deployment Pipelines",
-      "concept": "The Deployment Pipeline comparison engine executes a deep Tabular Model Schema (TMSL/BIM) diff. It analyzes JSON metadata for tables, calculated columns (e.g. SalesAmountQty), measures, Power Query partitions, and parameter bindings to identify exact stage divergence before promotion."
+      "concept": "Dynamic Row-Level Security with Disconnected Security Tables",
+      "details": "Dynamic RLS uses USERPRINCIPALNAME() and LOOKUPVALUE() on a disconnected security table to evaluate row-level filter predicates at query runtime. This avoids bidirectional relationship ambiguity, preserves single-direction star schema architecture, and prevents cross-filtering side effects across unrelated dimensions.",
+      "phase": "P4",
+      "date": "2026-09-06"
     },
     {
       "id": "CL-21",
-      "topic": "TMDL / PBIP Text Serialization & Git Integration",
-      "concept": "Tabular Model Definition Language (TMDL) breaks monolithic binary (.pbix) and JSON (model.bim) models into clean, folder-based, human-readable text files. Each table, measure, and partition is isolated in individual .tmdl files, enabling Git version control, line-by-line PR reviews, and conflict-free multi-developer co-authoring."
+      "concept": "Hierarchical Fallback Evaluation in Dynamic RLS Filters",
+      "details": "Enterprise RLS filters implement nested IF/OR structures (e.g. ALL -> Region -> Territory) allowing executive users unconstrained access, regional directors aggregate regional scope, and field territory managers strictly localized visibility in a single unified security role.",
+      "phase": "P4",
+      "date": "2026-09-06"
     },
     {
       "id": "CL-22",
-      "topic": "Pull Request (PR) Governance & TMDL Quality Gates",
-      "concept": "Git PR code reviews on .pbip / TMDL enable automated and peer inspection of tabular models before merging: verifying Power Query partition parameterization, auditing DAX measure logic, checking for schema regressions, and ensuring zero hardcoded local strings penetrate downstream environments."
+      "concept": "Object-Level Security (OLS) Restrictive Engine Mechanics vs RLS Union Logic",
+      "details": "While RLS permissions are cumulative (evaluating the union of permitted rows using OR logic across multiple roles), OLS permissions are strictly restrictive. If any assigned role sets an object's permission to 'none', the table/column is completely concealed from metadata and queries, preventing accidental data leaks across combined roles.",
+      "phase": "P4",
+      "date": "2026-09-06"
     },
     {
       "id": "CL-23",
-      "topic": "Automated CI Quality Gates with Tabular Editor BPA & Linters",
-      "concept": "Tabular Editor Best Practice Analyzer (BPA) has 50+ built-in industry rules (e.g., 'Hide foreign key columns', 'Avoid bi-directional relationships on 1-to-many', 'Format DAX measures', 'Ensure descriptions on visible objects'). In a CI pipeline (GitHub Actions), running TabularEditor.exe /analyze or a TMDL linter will automatically fail the build and block the Pull Request if a developer introduces bad DAX or unparameterized queries, guaranteeing zero technical debt enters the main branch."
+      "concept": "Hierarchical VertiPaq Partition Compression (Year, Quarter, Month Slices)",
+      "details": "When applying Incremental Refresh policies, the VertiPaq storage engine automatically compacts older historical partitions into Quarter and Year slices while maintaining granular Monthly slices for the active window. This minimizes partition metadata overhead, optimizes columnar dictionary encoding, and restricts scheduled refresh query execution exclusively to the latest active partition.",
+      "phase": "P5",
+      "date": "2026-09-06"
     },
     {
       "id": "CL-24",
-      "topic": "Fabric REST API & Service Principal CI/CD Automation",
-      "concept": "Using Azure Entra ID Service Principals and Fabric REST APIs (POST /v1/workspaces/.../deployStage) in GitHub Actions completely decouples developers from direct production workspace permissions, eliminates human release errors, cryptographically links deployments to Git commit SHAs, and enables end-to-end automated pipelines (deploy -> refresh -> DAX smoke test query)."
-    },
-    {
-      "id": "CL-25",
-      "topic": "Environment Schema Drift & Defensive Power Query Architecture",
-      "concept": "Parameterized deployments swap connection strings, but if downstream data sources drift in structure (e.g. renamed Excel sheets, altered SQL columns, modified table schemas), data refresh fails with 'Key didn't match any rows'. Models must maintain strict cross-environment contract parity and employ defensive Power Query patterns (e.g. Source{0}[Data] or resilient table filters)."
-    },
-    {
-      "id": "CL-26",
-      "topic": "Gateway High-Availability Clusters & Cloud-Native Modernization",
-      "concept": "On-Premises Data Gateways running on personal machines or single VMs create critical single-points-of-failure for production refreshes (VM sleep, network drops, expired Windows passwords). Enterprise architectures harden gateways using High-Availability (HA) gateway clusters or modernize data sources to cloud-native storage (SharePoint Online / Azure SQL / Fabric OneLake), enabling direct cloud-to-cloud refresh via Entra ID without gateway dependencies."
-    },
-    {
-      "id": "CL-27",
-      "topic": "Rollback Engineering & Cache Invalidation Lifecycle",
-      "concept": "Power BI Deployment Pipelines are forward-only (Dev -> Test -> Prod) and do not retain artifact version snapshots. Enterprise rollbacks require either: (1) Git Revert on .pbip with automated CI/CD redeployment, or (2) reverting Dev to the last known-good commit and promoting forward. Post-rollback, an immediate Data Refresh is mandatory to purge corrupted cache and re-hydrate the VertiPaq engine before reopening user access."
-    },
-    {
-      "id": "CL-28",
-      "topic": "The Enterprise Deployment Master Blueprint",
-      "concept": "The complete enterprise deployment framework integrates: (1) Multi-Team parallel authoring via Git PBIP feature branches and App-level convergence; (2) High-Compliance governance using Service Principal deployment, freeze window role locks, and immutable dual audit logs; and (3) Agile Sandbox graduation enforced by a 3-Gate checklist (parameterization, technical debt refactoring, automated TMDL BPA validation)."
-    },
-    {
-      "id": "CL-29",
-      "topic": "Deployment Moves Model; Refresh Loads Data (Import Mode + VertiPaq Caching)",
-      "concept": "DEV (Model definition + 605 cached rows) -> [Deploy via Pipeline] -> TEST (Model definition + 0 cached rows initially) -> [Refresh] -> TEST (Model definition + 600 rows from Test source). Power BI Deployment Pipelines transfer model metadata and schema definitions only; cached VertiPaq data rows are never moved. Refresh is strictly required to execute Power Query transformations and load data rows into memory."
-    },
-    {
-      "id": "CL-30",
-      "topic": "Two Mandatory Configurations in Target Test Stage",
-      "concept": "To restore full data functionality post-deployment: 1. Parameter Deployment Rules: Bind semantic model parameters (p_ServerName, p_DatabaseName, or p_FilePath) to the Test environment. 2. Post-Deployment Data Refresh & Gateway Credentials: Authenticate Gateway/OAuth2 cloud credentials and trigger a scheduled/manual refresh to populate the VertiPaq cache."
+      "concept": "XMLA Read/Write Endpoint Connectivity & TMSL Schema Inspection",
+      "details": "Assigning workspaces to Microsoft Fabric / Premium capacity exposes standard Analysis Services XMLA endpoints (powerbi://api.powerbi.com/v1.0/myorg/workspace-name). External management tools (SSMS, DAX Studio, Tabular Editor) connect directly to live cloud models to inspect physical partition schemas (TMSL policyRange definitions) and execute granular partition processing without Power BI Desktop dependency.",
+      "phase": "P5",
+      "date": "2026-09-06"
     }
   ],
-  "knowledge_gaps": [
+  "technical_questions": [
     {
-      "id": "GAP-01",
-      "topic": "Post-Deployment Import Cache & Gateway Refresh Precondition",
-      "description": "Initial misconception that promoting an Import mode semantic model copies cached data rows into downstream workspaces.",
-      "remediation": "Mastered that pipelines transfer schema only; downstream workspaces have 0 rows until an explicit Gateway/Cloud refresh is executed (TB-01 / CL-09 / CL-01).",
-      "status": "Remediated & Mastered"
+      "id": "TQ-01",
+      "question": "Why do we use smaller data volume in DEV but larger in TEST/PROD?",
+      "answer_summary": "Fast iteration identified; performance at scale and incremental refresh partitioning explained.",
+      "score": 4,
+      "max_score": 10,
+      "evaluation": "Partially Correct",
+      "category": "Workspace Architecture",
+      "phase": "P0",
+      "date": "2026-09-05"
     },
     {
-      "id": "GAP-02",
-      "topic": "Multi-Team Semantic Model Collaboration — Pipelines vs Git PBIP",
-      "description": "Uncertainty whether to use shared deployment pipelines vs Git feature branching for multiple developer teams.",
-      "remediation": "Mastered decision matrix: Domain-Specific Pipelines (Option B) for separate reports/datasets; Git PBIP Feature Branching (Option C) for co-authoring a single shared core semantic model (CL-16).",
-      "status": "Remediated & Mastered"
+      "id": "TQ-02",
+      "question": "Why 3 separate databases instead of 1 shared database with environment flags?",
+      "answer_summary": "Correctly identified development isolation, realistic testing, and preventing accidental overwrites across teams.",
+      "score": 9,
+      "max_score": 10,
+      "evaluation": "Correct",
+      "category": "Workspace Architecture",
+      "phase": "P0",
+      "date": "2026-09-05"
     },
     {
-      "id": "GAP-03",
-      "topic": "Schema Modification vs Data Refresh Boundary",
-      "description": "Confusion over why saving a newly created column in Power BI Desktop was not appearing in Power BI Service after triggering cloud Data Refresh.",
-      "remediation": "Clarified that Data Refresh only pulls row changes for existing cloud schema; structural schema additions (columns/measures) require Desktop Publish or Git PR sync (TB-02 / CL-19).",
-      "status": "Remediated & Mastered"
+      "id": "TQ-03",
+      "question": "What is an SPN and why does CI/CD require one instead of user credentials?",
+      "answer_summary": "Identified eliminating personal dependency; explained MFA bypass, token rotation, and pipeline automation.",
+      "score": 8,
+      "max_score": 10,
+      "evaluation": "Correct",
+      "category": "CI/CD",
+      "phase": "P0",
+      "date": "2026-09-05"
     },
     {
-      "id": "GAP-04",
-      "topic": "Fabric REST API vs Manual UI Deployment Automation",
-      "description": "Initial gap on why enterprise pipelines use REST APIs & Service Principals instead of UI deploy buttons.",
-      "remediation": "Mastered Service Principal least-privilege security, eliminating human error during release, automated post-deploy refresh & DAX smoke testing, and Git release tag auditability (CL-24).",
-      "status": "Remediated & Mastered"
+      "id": "TQ-04",
+      "question": "If a PostgreSQL column is renamed in DEV, where does it break downstream and why?",
+      "answer_summary": "Identified gap; taught Mashup Engine column binding failure, scheduled refresh crash, and DAX measure breakage (Lab L10 preview).",
+      "score": 7,
+      "max_score": 10,
+      "evaluation": "Technically Correct but Needs Improvement",
+      "category": "Troubleshooting",
+      "phase": "P0",
+      "date": "2026-09-05"
     },
     {
-      "id": "GAP-05",
-      "topic": "Downstream Environment Schema Drift & Defensive Navigation",
-      "description": "Initial question regarding remediation when parameterized data sources fail with 'The key didn't match any rows in the table'.",
-      "remediation": "Mastered dual remediation: enforcing upstream environment schema alignment and utilizing defensive Power Query navigation (Source{0}[Data]) to prevent catastrophic refresh failures (TB-03 / CL-25).",
-      "status": "Remediated & Mastered"
+      "id": "TQ-05",
+      "question": "How do hybrid data sources (Postgres + OneDrive) behave during scheduled refresh in Service?",
+      "answer_summary": "Recognized Postgres=data and OneDrive=security/targets; explained Gateway orchestration + direct cloud refresh + Formula.Firewall privacy levels.",
+      "score": 8,
+      "max_score": 10,
+      "evaluation": "Correct",
+      "category": "Refresh",
+      "phase": "P0",
+      "date": "2026-09-05"
     },
     {
-      "id": "GAP-06",
-      "topic": "Gateway Reliability & Cloud-Native Source Modernization",
-      "description": "Understanding root causes of production refresh failures (gateway machine sleep, password expiry) and architectural migration.",
-      "remediation": "Mastered HA Gateway Clustering and modernization to Cloud Storage (SharePoint Online / OneLake / Azure SQL) using Entra ID OAuth2 for zero-gateway operations (TB-04 / CL-26).",
-      "status": "Remediated & Mastered"
+      "id": "TQ-06",
+      "question": "What is Query Folding and why does custom M code often break it?",
+      "answer_summary": "Correctly explained pushdown to SQL database server vs mashup engine execution, and why Native Query translation fails on unsupported M constructs.",
+      "score": 9,
+      "max_score": 10,
+      "evaluation": "Correct",
+      "category": "Troubleshooting",
+      "phase": "P1",
+      "date": "2026-09-05"
     },
     {
-      "id": "GAP-07",
-      "topic": "Target Stage Zero-Row Cache & Mandatory Test Stage Setup",
-      "description": "Understanding why visuals show blank/error in Test stage post-deployment and what exact configurations are required.",
-      "remediation": "Mastered that deployment moves the model while refresh loads data. Configured parameter deployment rules and authenticated refresh as the two mandatory post-deployment steps (CL-29 / CL-30 / TB-01).",
-      "status": "Remediated & Mastered"
+      "id": "TQ-07",
+      "question": "Why is PBIP (TMDL/JSON) superior to binary PBIX for multi-developer collaboration?",
+      "answer_summary": "Explained plain-text Git diffing, line-by-line branch mergeability, and multi-developer collaboration without binary corruption.",
+      "score": 10,
+      "max_score": 10,
+      "evaluation": "Correct",
+      "category": "Git",
+      "phase": "P1",
+      "date": "2026-09-05"
+    },
+    {
+      "id": "TQ-08",
+      "question": "Why does VertiPaq strongly favor Star Schema over Snowflake / Bidirectional schemas?",
+      "answer_summary": "Identified structural differences and performance advantage; taught single-hop Storage Engine bitmaps vs multi-hop Formula Engine materialization.",
+      "score": 8.5,
+      "max_score": 10,
+      "evaluation": "Correct",
+      "category": "Workspace Architecture",
+      "phase": "P1",
+      "date": "2026-09-05"
+    },
+    {
+      "id": "TQ-09",
+      "question": "Why is it an anti-pattern to leave foreign keys unhidden in report view?",
+      "answer_summary": "Identified user drag error; explained high-cardinality fact table scans, RLS filter context leaks, and self-service governance.",
+      "score": 7,
+      "max_score": 10,
+      "evaluation": "Technically Correct but Needs Improvement",
+      "category": "Workspace Architecture",
+      "phase": "P1",
+      "date": "2026-09-05"
+    },
+    {
+      "id": "TQ-10",
+      "question": "What is the difference between Promoted and Certified semantic model endorsements?",
+      "answer_summary": "Correctly distinguished self-service owner promotion from tenant-controlled governance team certification.",
+      "score": 10,
+      "max_score": 10,
+      "evaluation": "Correct",
+      "category": "Security",
+      "phase": "P2",
+      "date": "2026-09-06"
+    },
+    {
+      "id": "TQ-11",
+      "question": "What is the operational difference between Read and Build permissions on a shared semantic model?",
+      "answer_summary": "Identified visual viewing restriction vs building new reports and connecting live via Analyze in Excel/XMLA.",
+      "score": 8.5,
+      "max_score": 10,
+      "evaluation": "Technically Correct but Needs Improvement",
+      "category": "Security",
+      "phase": "P2",
+      "date": "2026-09-06"
+    },
+    {
+      "id": "TQ-12",
+      "question": "Why does taking over a dataset break existing gateway and scheduled refresh bindings?",
+      "answer_summary": "Identified gateway credentials context; explained security invalidation of connection credentials on ownership change.",
+      "score": 8.5,
+      "max_score": 10,
+      "evaluation": "Correct",
+      "category": "Troubleshooting",
+      "phase": "P2",
+      "date": "2026-09-06"
+    },
+    {
+      "id": "TQ-13",
+      "question": "Where are rotated database passwords updated in Power BI Service, and how does it propagate?",
+      "answer_summary": "Correctly identified 'Manage Connections and Gateways'; clarified that updating the central connection object automatically updates all mapped semantic models across the tenant.",
+      "score": 8.5,
+      "max_score": 10,
+      "evaluation": "Technically Correct but Needs Improvement",
+      "category": "Refresh",
+      "phase": "P3",
+      "date": "2026-09-06"
+    },
+    {
+      "id": "TQ-14",
+      "question": "What is the difference between Standard Mode and Personal Mode gateways in enterprise architecture?",
+      "answer_summary": "Correctly differentiated multi-user enterprise sharing, clustering, and DirectQuery support vs single-user Personal mode.",
+      "score": 8.5,
+      "max_score": 10,
+      "evaluation": "Correct",
+      "category": "Refresh",
+      "phase": "P3",
+      "date": "2026-09-06"
+    },
+    {
+      "id": "TQ-15",
+      "question": "What happens to report visuals in Import mode if a scheduled refresh fails due to gateway downtime?",
+      "answer_summary": "Correctly identified that consumers see last successful snapshot (stale data) rather than blank visuals.",
+      "score": 10,
+      "max_score": 10,
+      "evaluation": "Correct",
+      "category": "Troubleshooting",
+      "phase": "P3",
+      "date": "2026-09-06"
+    },
+    {
+      "id": "TQ-16",
+      "question": "Why does Power Query enforce Privacy Levels (Formula.Firewall) during mixed-source joins?",
+      "answer_summary": "Correctly explained preventing confidential data leakage across untrusted external data boundaries.",
+      "score": 8.5,
+      "max_score": 10,
+      "evaluation": "Correct",
+      "category": "Security",
+      "phase": "P3",
+      "date": "2026-09-06"
+    },
+    {
+      "id": "TQ-17",
+      "question": "Why use disconnected lookup tables with DAX rather than bi-directional relationships for Dynamic RLS?",
+      "answer_summary": "Correctly identified that bidirectional relationships cause filter ambiguity, unintended propagation across unrelated dimensions, and VertiPaq engine traversal overhead.",
+      "score": 10,
+      "max_score": 10,
+      "evaluation": "Correct",
+      "category": "Security",
+      "phase": "P4",
+      "date": "2026-09-06"
+    },
+    {
+      "id": "TQ-18",
+      "question": "If a user belongs to both a role with OLS restricting unit_cost and another role that allows read access, what does the Power BI engine do?",
+      "answer_summary": "Correctly identified that OLS is restrictive (most restrictive wins / None hides the object), preventing accidental data exposure across combined roles.",
+      "score": 10,
+      "max_score": 10,
+      "evaluation": "Correct",
+      "category": "Security",
+      "phase": "P4",
+      "date": "2026-09-06"
+    },
+    {
+      "id": "TQ-19",
+      "question": "What happens to historical partitions when publishing a model with incremental refresh directly from Desktop?",
+      "answer_summary": "Explained metadata-only preservation in modern service while identifying the enterprise standard of using Deployment Pipelines/ALM to guarantee partition protection (Lab L20).",
+      "score": 9.5,
+      "max_score": 10,
+      "evaluation": "Correct",
+      "category": "Deployment Pipelines",
+      "phase": "P5",
+      "date": "2026-09-06"
     }
   ],
-  "troubleshooting_log": [
+  "weak_areas": [
     {
-      "id": "TB-01",
-      "issue": "Visuals in Test/Prod display empty or 'Capacity/Query Failure' error post-pipeline promotion, while Dev renders normally.",
-      "root_cause": "1. Import storage models promote schema/definitions only; cached VertiPaq table data is NOT copied by the deployment pipeline.\n2. Target stage semantic model has 0 cached rows until its first post-deployment refresh.\n3. Local file path parameters (D:\\...) cannot refresh in cloud Power BI Service without an On-Premises Data Gateway.",
-      "fix": "1. In enterprise architectures, store source files in Cloud Storage (SharePoint Online / OneLake / ADLS Gen2 / Azure SQL) for cloud-to-cloud automated refresh.\n2. When testing local files, configure an On-Premises Data Gateway or run Desktop test binds.\n3. Execute an immediate scheduled or manual refresh after initial deployment.",
-      "prevention": "Include mandatory Gate 2 (Post-Deployment Refresh & Gateway Check) in the deployment smoke-test checklist before releasing reports to business users."
+      "area": "Incremental Refresh Partitioning",
+      "detail": "Did not connect data volume/date range to partition testing requirements. Mastered and verified via XMLA TMSL partition inspection in Phase 5.",
+      "status": "Mastered / Verified via XMLA in Phase 5",
+      "identified_date": "2026-09-05"
     },
     {
-      "id": "TB-02",
-      "issue": "Newly created column/measure in Power BI Desktop does not appear in Power BI Service after triggering cloud Data Refresh.",
-      "root_cause": "Cloud data refresh only extracts and updates data rows for the existing cloud schema. It does not monitor local .pbix files or alter model metadata.",
-      "fix": "Publish the updated .pbix file from Power BI Desktop to the target Dev workspace (or execute a Git sync commit). Then promote the updated schema through the Deployment Pipeline.",
-      "prevention": "Differentiate between Schema Changes (require Publish/Git PR) and Data Changes (require Data Refresh)."
+      "area": "Schema Drift & Column Renaming (Lab L10)",
+      "detail": "Power Query mashup step failure mechanics explained. Will rehearse during Sabotage Lab L10.",
+      "status": "Explained — Scheduled for Lab L10",
+      "identified_date": "2026-09-05"
     },
     {
-      "id": "TB-03",
-      "issue": "Post-deployment refresh fails in Test/Prod with error: 'The key didn't match any rows in the table' (e.g. [Item=\"Sales_2026\", Kind=\"Sheet\"]).",
-      "root_cause": "Environment Schema Drift: Parameterized deployment rule redirected the dataset to the Test/Prod source, but the sheet name or table structure in the Test/Prod file did not match the hardcoded navigation key in the M query.",
-      "fix": "1. Update the Test/Prod source file to align sheet/table naming with the model contract.\n2. Refactor the M query to use defensive indexing (e.g. Source{0}[Data]) rather than strict named key lookup.\n3. Implement automated schema validation in pre-deployment CI pipelines.",
-      "prevention": "Enforce strict schema parity between Dev, Test, and Prod data repositories."
-    },
-    {
-      "id": "TB-04",
-      "issue": "Scheduled refresh fails with error: 'The gateway operation timed out or the gateway is offline. DM_GWPipeline_Gateway_InvalidConnectionCredentials'.",
-      "root_cause": "1. The host machine/VM running the On-Premises Data Gateway is turned off, asleep, or lost network connection.\n2. Stored Windows or service account credentials expired or were changed.",
-      "fix": "1. Ensure gateway host VM runs continuously with power-saving/sleep disabled.\n2. Configure High Availability (HA) gateway clusters across multiple VMs.\n3. Modernize on-prem files to cloud storage (SharePoint Online, Azure SQL, OneLake) for zero-gateway direct refresh.",
-      "prevention": "Use dedicated service accounts with non-expiring passwords or Azure Managed Identities."
+      "area": "Formula.Firewall Privacy Levels in Mixed Sources",
+      "detail": "Mashup engine privacy boundary between on-prem gateway and cloud OAuth2 sources explained and mastered in Phase 3.",
+      "status": "Mastered / Resolved in Phase 3",
+      "identified_date": "2026-09-05"
     }
   ],
-  "evidence_log": [],
-  "revision_items": [
-    {
-      "id": "REV-01",
-      "category": "Deployment Mechanics",
-      "question": "Why do visuals in Test/Prod break after initial promotion even if Dev works perfectly?",
-      "core_takeaway": "Import mode copies schema only. Target stage dataset has 0 cached rows until its first post-deployment refresh. Local paths also require On-Premises Gateway."
-    },
-    {
-      "id": "REV-02",
-      "category": "Architecture & Git",
-      "question": "When should you use Domain-Specific Pipelines vs Git PBIP Feature Branching?",
-      "core_takeaway": "Separate reports/datasets -> Domain-Specific Pipelines (Option B). Single shared enterprise semantic model -> Git PBIP Feature Branching with PRs (Option C)."
-    },
-    {
-      "id": "REV-03",
-      "category": "Governance & Security",
-      "question": "How do you enforce regulatory freeze windows in Power BI deployment pipelines?",
-      "core_takeaway": "Temporarily de-elevate developer/lead roles in target production workspaces from Member/Admin to Contributor/Viewer, or revoke pipeline stage deployment permissions."
-    },
-    {
-      "id": "REV-04",
-      "category": "CI/CD Automation",
-      "question": "What are the core benefits of deploying Power BI via Fabric REST APIs over manual clicks?",
-      "core_takeaway": "Service Principal security (developers have zero prod access), elimination of human error, cryptographic Git tag traceability, and automated end-to-end promotion -> refresh -> smoke test queries."
-    },
-    {
-      "id": "REV-05",
-      "category": "Troubleshooting & Power Query",
-      "question": "How do you resolve 'The key didn't match any rows in the table' error post-promotion?",
-      "core_takeaway": "Ensure target stage data source has identical sheet/column naming (schema parity), and refactor M queries using defensive navigation (Source{0}[Data])."
-    },
-    {
-      "id": "REV-06",
-      "category": "Gateway & Cloud Reliability",
-      "question": "How do you eliminate single points of failure with on-premises data gateways?",
-      "core_takeaway": "Deploy High-Availability (HA) Gateway Clusters across 2+ Azure VMs, or modernize data sources to Cloud Storage (SharePoint Online / OneLake / Azure SQL) for zero-gateway refresh."
-    },
-    {
-      "id": "REV-07",
-      "category": "Multi-Team Architecture (Scenario 1)",
-      "question": "How do you architect multi-team parallel development on a shared enterprise semantic model?",
-      "core_takeaway": "PBIP + TMDL format with Git feature branches (feature/finance, feature/sales) per squad, PR code reviews + CI BPA quality gates merging into main, synced to Dev workspace and promoted via Deployment Pipeline (Option C)."
-    },
-    {
-      "id": "REV-08",
-      "category": "Regulatory Compliance & Governance (Scenario 2)",
-      "question": "How do you enforce separation of duties, freeze windows, and dual audit trails in high-compliance financial reporting?",
-      "core_takeaway": "Strict RBAC (Devs: Contributor in Dev, Viewer in Test, No access in Prod; Release Manager: Admin). Freeze windows enforced via role de-elevation and CI locks. Dual audit trails via Git TMDL commit logs + Pipeline execution history."
-    },
-    {
-      "id": "REV-09",
-      "category": "Innovation Sandbox Graduation (Scenario 3)",
-      "question": "What is the 3-Gate Graduation Checklist to move an unconstrained sandbox prototype into enterprise production?",
-      "core_takeaway": "Gate 1: Parameterization (convert local paths to M Parameters). Gate 2: Technical Debt & Optimization (Tabular Editor BPA, hide FKs, optimize DAX). Gate 3: Git Integration & PR Review (PBIP/TMDL commit to feature branch and peer PR review into Dev pipeline)."
-    }
+  "hours_log": [
+    {"week": "Week 1", "hours": 0.5, "phases": "P0", "note": "Initial setup session"},
+    {"week": "Week 1", "hours": 0.5, "phases": "P0", "note": "T0.3 PostgreSQL databases + schema DDL"},
+    {"week": "Week 1", "hours": 0.5, "phases": "P0", "note": "T0.4 Synthetic data generator execution (5.25M total rows seeded)"},
+    {"week": "Week 1", "hours": 0.5, "phases": "P0", "note": "T0.5 Cloud Excel sources generated and deployed to OneDrive"},
+    {"week": "Week 1", "hours": 0.5, "phases": "P0", "note": "T0.6 Architecture blueprint authored + Phase 0 Gate Exam passed"},
+    {"week": "Week 1", "hours": 0.5, "phases": "P1", "note": "T1.1 PBIP + TMDL project initialized with M parameters"},
+    {"week": "Week 1", "hours": 0.5, "phases": "P1", "note": "T1.2 Ingested 7 queries & verified PostgreSQL Native Query Folding"},
+    {"week": "Week 1", "hours": 0.5, "phases": "P1", "note": "T1.3 Star Schema model & Dim_Date table built"},
+    {"week": "Week 1", "hours": 0.5, "phases": "P1", "note": "T1.4 Authored 22 DAX core measures across 4 display folders"},
+    {"week": "Week 1", "hours": 0.5, "phases": "P1", "note": "T1.5 BPA hardening + Phase 1 Gate Exam passed"},
+    {"week": "Week 1", "hours": 0.5, "phases": "P2", "note": "T2.1 Trial verified (47d left) + T2.2 BL-Sales-DEV workspace created and published"},
+    {"week": "Week 1", "hours": 0.5, "phases": "P2", "note": "T2.3 Configured 3 Thin Reports in PBIP/PBIR format bound via live connection"},
+    {"week": "Week 1", "hours": 0.5, "phases": "P2", "note": "T2.4 Endorsement configured + T2.5 Read/Build & Takeover evaluated + Phase 2 Gate passed"},
+    {"week": "Week 1", "hours": 0.5, "phases": "P3", "note": "T3.1-T3.3 Gateway configured, SSL handshake timeout diagnosed & resolved, on-demand refresh completed"},
+    {"week": "Week 1", "hours": 0.5, "phases": "P3", "note": "T3.4 Privacy levels + T3.5 Gateway Gate Exam passed (90/100) + Phase 4 Unlocked"},
+    {"week": "Week 1", "hours": 0.5, "phases": "P4", "note": "T4.1-T4.5 Dynamic RLS, OLS, Persona Testing, App Published & Phase 4 Gate passed (92/100)"},
+    {"week": "Week 1", "hours": 0.5, "phases": "P5", "note": "T5.1-T5.5 Incremental Refresh configured, initial partition seeding (25s), XMLA SSMS TMSL verified, Gate passed (95/100)"}
   ]
 }
